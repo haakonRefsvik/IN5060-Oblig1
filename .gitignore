@@ -43,3 +43,8 @@ logs/
 # temporary files
 tmp/
 tmp.*
+
+/env/bin
+
+env/
+.env/
