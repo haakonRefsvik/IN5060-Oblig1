@@ -10,13 +10,15 @@ from python_motion_planning import *
 
 if __name__ == '__main__':
     # Create environment with no custom obstacles (only boundary walls)
-    grid_env = Grid(100, 100, 50)
+    grid_env = Grid(100, 50, 20)
     # grid_env.obstacles already contains boundary walls by default
     
     # Add obstacles
     obstacles = grid_env.obstacles  # Get current obstacles (boundary walls)
     
     # Add a 3D cube obstacle in the middle:
+
+    '''
     center_x, center_y, center_z = 50, 25, 25
     cube_size = 10
     for x in range(center_x - cube_size, center_x + cube_size + 1):
@@ -24,6 +26,12 @@ if __name__ == '__main__':
             for z in range(center_z - cube_size, center_z + cube_size + 1):
                 if 0 <= x < 100 and 0 <= y < 100 and 0 <= z < 50:
                     obstacles.add((x, y, z))
+    '''
+
+    ## Vegg nr 1
+    for x in range(5, 15, 1):
+        for z in range(0, 20, 1):
+            obstacles.add((x, 10, z))
     
     # Update the environment after adding obstacles:
     grid_env.update(obstacles)
@@ -33,8 +41,8 @@ if __name__ == '__main__':
 
 
     # -------------global planners-------------
-    plt = AStar(start=(5, 5, 45), goal=(95, 95, 5), env=grid_env)
-    # plt = DStar(start=(5, 5, 45), goal=(95, 95, 5), env=grid_env)
+    plt = AStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
+    #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
     # plt = DStarLite(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = Dijkstra(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
