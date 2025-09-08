@@ -12,7 +12,7 @@ import matplotlib.patches as patches
 
 from ..environment.env import Env, Grid, Map, Node
 
-squaresize = 50
+squaresize = 40
 squaresize_explored = 5
 
 class Plot:
@@ -246,32 +246,16 @@ class Plot:
         '''
         Plot path in global planning.
         '''
-        if self.is3d:
-            # Only plot points with valid z values
-            path_3d = [p for p in path if len(p) == 3 and p[2] is not None]
-            if path_3d:
-                path_x = [p[0] for p in path_3d]
-                path_y = [p[1] for p in path_3d]
-                path_z = [p[2] for p in path_3d]
-                self.ax.plot(path_x, path_y, path_z, path_style, linewidth=2, color=path_color)
-            # Plot start/goal only if z is not None
-            if hasattr(self.start, 'z') and self.start.z is not None:
-                self.ax.scatter(self.start.x, self.start.y, self.start.z, marker="s", color="#ff0000")
-            if hasattr(self.goal, 'z') and self.goal.z is not None:
-                self.ax.scatter(self.goal.x, self.goal.y, self.goal.z, marker="s", color="#1155cc")
-            # If no valid 3D points, fallback to 2D
-            if not path_3d:
-                path_x = [p[0] for p in path]
-                path_y = [p[1] for p in path]
-                self.ax.plot(path_x, path_y, path_style, linewidth=2, color=path_color)
-                self.ax.scatter(self.start.x, self.start.y, marker="s", color="#ff0000")
-                self.ax.scatter(self.goal.x, self.goal.y, marker="s", color="#1155cc")
-        else:
-            path_x = [path[i][0] for i in range(len(path))]
-            path_y = [path[i][1] for i in range(len(path))]
-            plt.plot(path_x, path_y, path_style, linewidth=2, color=path_color)
-            plt.plot(self.start.x, self.start.y, marker="s", color="#ff0000")
-            plt.plot(self.goal.x, self.goal.y, marker="s", color="#1155cc")
+        path_3d = [p for p in path if len(p) == 3 and p[2] is not None]
+        if path_3d:
+            path_x = [p[0] for p in path_3d]
+            path_y = [p[1] for p in path_3d]
+            path_z = [p[2] for p in path_3d]
+            self.ax.plot(path_x, path_y, path_z, path_style, linewidth=2, color=path_color)
+        if not path_3d:
+            path_x = [p[0] for p in path]
+            path_y = [p[1] for p in path]
+            self.ax.plot(path_x, path_y, path_style, linewidth=2, color=path_color)
 
     def plotAgent(self, pose: tuple, radius: float=1) -> None:
         '''
