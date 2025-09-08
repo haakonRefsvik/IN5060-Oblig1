@@ -16,7 +16,14 @@ class Plot:
         self.goal = Node(goal, goal, 0, 0)
         self.env = env
         self.fig = plt.figure("planning")
-        self.ax = self.fig.add_subplot()
+        # Use 3D axes if z_range is present
+        if hasattr(env, 'z_range') and env.z_range is not None:
+            from mpl_toolkits.mplot3d import Axes3D
+            self.ax = self.fig.add_subplot(111, projection='3d')
+            self.is3d = True
+        else:
+            self.ax = self.fig.add_subplot()
+            self.is3d = False
 
     def animation(self, path: list, name: str, cost: float = None, expand: list = None, history_pose: list = None,
                   predict_path: list = None, lookahead_pts: list = None, cost_curve: list = None,
@@ -42,104 +49,142 @@ class Plot:
     def plotEnv(self, name: str) -> None:
         '''
         Plot environment with static obstacles.
-
-        Parameters
-        ----------
-        name: Algorithm name or some other information
         '''
-        plt.plot(self.start.x, self.start.y, marker="s", color="#ff0000")
-        plt.plot(self.goal.x, self.goal.y, marker="s", color="#1155cc")
-
-        if isinstance(self.env, Grid):
-            obs_x = [x[0] for x in self.env.obstacles]
-            obs_y = [x[1] for x in self.env.obstacles]
-            plt.plot(obs_x, obs_y, "sk")
-
-        if isinstance(self.env, Map):
-            ax = self.fig.add_subplot()
-            # boundary
-            for (ox, oy, w, h) in self.env.boundary:
-                ax.add_patch(patches.Rectangle(
-                        (ox, oy), w, h,
-                        edgecolor='black',
-                        facecolor='black',
-                        fill=True
+        if self.is3d:
+            self.ax.scatter(self.start.x, self.start.y, self.start.z, marker="s", color="#ff0000")
+            self.ax.scatter(self.goal.x, self.goal.y, self.goal.z, marker="s", color="#1155cc")
+            if isinstance(self.env, Grid):
+                # Separate boundary walls from internal obstacles
+                boundary_obs = []
+                internal_obs = []
+                
+                for obs in self.env.obstacles:
+                    x, y, z = obs
+                    # Check if obstacle is on boundary
+                    is_boundary = (x == 0 or x == self.env.x_range - 1 or 
+                                 y == 0 or y == self.env.y_range - 1 or 
+                                 z == 0 or z == self.env.z_range - 1)
+                    if is_boundary:
+                        boundary_obs.append(obs)
+                    else:
+                        internal_obs.append(obs)
+                
+                # Plot only selected boundary walls (remove top and front walls for better visibility)
+                if boundary_obs:
+                    visible_boundary = []
+                    for obs in boundary_obs:
+                        x, y, z = obs
+                        # Skip top wall (z = max) and front wall (y = 0) for better visibility
+                        if not (z == self.env.z_range - 1 or y == 0):
+                            visible_boundary.append(obs)
+                    
+                    if visible_boundary:
+                        boundary_x = [x[0] for x in visible_boundary]
+                        boundary_y = [x[1] for x in visible_boundary]
+                        boundary_z = [x[2] for x in visible_boundary]
+                        self.ax.scatter(boundary_x, boundary_y, boundary_z, c="lightgray", marker=".", s=2, alpha=0.1)
+                
+                # Plot internal obstacles as solid
+                if internal_obs:
+                    internal_x = [x[0] for x in internal_obs]
+                    internal_y = [x[1] for x in internal_obs]
+                    internal_z = [x[2] for x in internal_obs]
+                    self.ax.scatter(internal_x, internal_y, internal_z, c="black", marker="s", s=20)
+            # Map 3D visualization can be added here if needed
+            self.ax.set_xlabel('X')
+            self.ax.set_ylabel('Y')
+            self.ax.set_zlabel('Z')
+        else:
+            plt.plot(self.start.x, self.start.y, marker="s", color="#ff0000")
+            plt.plot(self.goal.x, self.goal.y, marker="s", color="#1155cc")
+            if isinstance(self.env, Grid):
+                obs_x = [x[0] for x in self.env.obstacles]
+                obs_y = [x[1] for x in self.env.obstacles]
+                plt.plot(obs_x, obs_y, "sk")
+            if isinstance(self.env, Map):
+                ax = self.fig.add_subplot()
+                for (ox, oy, w, h) in self.env.boundary:
+                    ax.add_patch(patches.Rectangle(
+                            (ox, oy), w, h,
+                            edgecolor='black',
+                            facecolor='black',
+                            fill=True
+                        )
                     )
-                )
-            # rectangle obstacles
-            for (ox, oy, w, h) in self.env.obs_rect:
-                ax.add_patch(patches.Rectangle(
-                        (ox, oy), w, h,
-                        edgecolor='black',
-                        facecolor='gray',
-                        fill=True
+                for (ox, oy, w, h) in self.env.obs_rect:
+                    ax.add_patch(patches.Rectangle(
+                            (ox, oy), w, h,
+                            edgecolor='black',
+                            facecolor='gray',
+                            fill=True
+                        )
                     )
-                )
-            # circle obstacles
-            for (ox, oy, r) in self.env.obs_circ:
-                ax.add_patch(patches.Circle(
-                        (ox, oy), r,
-                        edgecolor='black',
-                        facecolor='gray',
-                        fill=True
+                for (ox, oy, r) in self.env.obs_circ:
+                    ax.add_patch(patches.Circle(
+                            (ox, oy), r,
+                            edgecolor='black',
+                            facecolor='gray',
+                            fill=True
+                        )
                     )
-                )
-
-        plt.title(name)
-        plt.axis("equal")
+            plt.title(name)
+            plt.axis("equal")
+        self.ax.set_title(name)
 
     def plotExpand(self, expand: list) -> None:
         '''
         Plot expanded grids using in graph searching.
-
-        Parameters
-        ----------
-        expand: Expanded grids during searching
         '''
         if self.start in expand:
             expand.remove(self.start)
         if self.goal in expand:
             expand.remove(self.goal)
-
         count = 0
-        if isinstance(self.env, Grid):
+        if self.is3d and isinstance(self.env, Grid):
+            for x in expand:
+                count += 1
+                self.ax.scatter(x.x, x.y, x.z, color="#dddddd", marker='s', s=10)
+                if count % 100 == 0:
+                    plt.pause(0.001)
+        elif isinstance(self.env, Grid):
             for x in expand:
                 count += 1
                 plt.plot(x.x, x.y, color="#dddddd", marker='s')
-                plt.gcf().canvas.mpl_connect('key_release_event',
-                                            lambda event: [exit(0) if event.key == 'escape' else None])
-                if count < len(expand) / 3:         length = 20
-                elif count < len(expand) * 2 / 3:   length = 30
-                else:                               length = 40
-                if count % length == 0:             plt.pause(0.001)
-        
-        if isinstance(self.env, Map):
-            for x in expand:
-                count += 1
-                if x.parent:
-                    plt.plot([x.parent[0], x.x], [x.parent[1], x.y], 
-                        color="#dddddd", linestyle="-")
-                    plt.gcf().canvas.mpl_connect('key_release_event',
-                                                 lambda event:
-                                                 [exit(0) if event.key == 'escape' else None])
-                    if count % 10 == 0:
-                        plt.pause(0.001)
-
+                if count % 100 == 0:
+                    plt.pause(0.001)
+        # Map support can be added similarly
         plt.pause(0.01)
 
     def plotPath(self, path: list, path_color: str='#13ae00', path_style: str="-") -> None:
         '''
         Plot path in global planning.
-
-        Parameters
-        ----------
-        path: Path found in global planning
         '''
-        path_x = [path[i][0] for i in range(len(path))]
-        path_y = [path[i][1] for i in range(len(path))]
-        plt.plot(path_x, path_y, path_style, linewidth='2', color=path_color)
-        plt.plot(self.start.x, self.start.y, marker="s", color="#ff0000")
-        plt.plot(self.goal.x, self.goal.y, marker="s", color="#1155cc")
+        if self.is3d:
+            # Only plot points with valid z values
+            path_3d = [p for p in path if len(p) == 3 and p[2] is not None]
+            if path_3d:
+                path_x = [p[0] for p in path_3d]
+                path_y = [p[1] for p in path_3d]
+                path_z = [p[2] for p in path_3d]
+                self.ax.plot(path_x, path_y, path_z, path_style, linewidth=2, color=path_color)
+            # Plot start/goal only if z is not None
+            if hasattr(self.start, 'z') and self.start.z is not None:
+                self.ax.scatter(self.start.x, self.start.y, self.start.z, marker="s", color="#ff0000")
+            if hasattr(self.goal, 'z') and self.goal.z is not None:
+                self.ax.scatter(self.goal.x, self.goal.y, self.goal.z, marker="s", color="#1155cc")
+            # If no valid 3D points, fallback to 2D
+            if not path_3d:
+                path_x = [p[0] for p in path]
+                path_y = [p[1] for p in path]
+                self.ax.plot(path_x, path_y, path_style, linewidth=2, color=path_color)
+                self.ax.scatter(self.start.x, self.start.y, marker="s", color="#ff0000")
+                self.ax.scatter(self.goal.x, self.goal.y, marker="s", color="#1155cc")
+        else:
+            path_x = [path[i][0] for i in range(len(path))]
+            path_y = [path[i][1] for i in range(len(path))]
+            plt.plot(path_x, path_y, path_style, linewidth=2, color=path_color)
+            plt.plot(self.start.x, self.start.y, marker="s", color="#ff0000")
+            plt.plot(self.goal.x, self.goal.y, marker="s", color="#1155cc")
 
     def plotAgent(self, pose: tuple, radius: float=1) -> None:
         '''

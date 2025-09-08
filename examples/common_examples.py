@@ -9,39 +9,32 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 
 if __name__ == '__main__':
-    # Create environment with custom obstacles
-    grid_env = Grid(51, 31)
-    obstacles = grid_env.obstacles
-    for i in range(10, 21):
-        obstacles.add((i, 15))
-    for i in range(15):
-        obstacles.add((20, i))
-    for i in range(15, 30):
-        obstacles.add((30, i))
-    for i in range(16):
-        obstacles.add((40, i))
+    # Create environment with no custom obstacles (only boundary walls)
+    grid_env = Grid(100, 100, 50)
+    # grid_env.obstacles already contains boundary walls by default
+    
+    # Add obstacles
+    obstacles = grid_env.obstacles  # Get current obstacles (boundary walls)
+    
+    # Add a 3D cube obstacle in the middle:
+    center_x, center_y, center_z = 50, 25, 25
+    cube_size = 10
+    for x in range(center_x - cube_size, center_x + cube_size + 1):
+        for y in range(center_y - cube_size, center_y + cube_size + 1):
+            for z in range(center_z - cube_size, center_z + cube_size + 1):
+                if 0 <= x < 100 and 0 <= y < 100 and 0 <= z < 50:
+                    obstacles.add((x, y, z))
+    
+    # Update the environment after adding obstacles:
     grid_env.update(obstacles)
+    
+    # map_env = Map(100, 100, 50)
 
-    map_env = Map(51, 31)
-    obs_rect = [
-        [14, 12, 8, 2],
-        [18, 22, 8, 3],
-        [26, 7, 2, 12],
-        [32, 14, 10, 2]
-    ]
-    obs_circ = [
-        [7, 12, 3],
-        [46, 20, 2],
-        [15, 5, 2],
-        [37, 7, 3],
-        [37, 23, 3]
-    ]
-    map_env.update(obs_rect=obs_rect, obs_circ=obs_circ)
 
 
     # -------------global planners-------------
-    plt = AStar(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = DStar(start=(5, 5), goal=(45, 25), env=grid_env)
+    plt = AStar(start=(5, 5, 45), goal=(95, 95, 5), env=grid_env)
+    # plt = DStar(start=(5, 5, 45), goal=(95, 95, 5), env=grid_env)
     # plt = DStarLite(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = Dijkstra(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
