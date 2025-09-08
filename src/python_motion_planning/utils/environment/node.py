@@ -38,7 +38,11 @@ class Node(object):
     
     def __add__(self, node):
         assert isinstance(node, Node)
-        return Node((self.x + node.x, self.y + node.y), self.parent, self.g + node.g, self.h)
+        # Support 2D and 3D
+        if len(self.current) == 3 and len(node.current) == 3:
+            return Node((self.x + node.x, self.y + node.y, self.z + node.z), self.parent, self.g + node.g, self.h)
+        else:
+            return Node((self.x + node.x, self.y + node.y), self.parent, self.g + node.g, self.h)
 
     def __eq__(self, node) -> bool:
         if not isinstance(node, Node):
@@ -65,10 +69,17 @@ class Node(object):
     @property
     def x(self) -> float:
         return self.current[0]
-    
+
     @property
     def y(self) -> float:
         return self.current[1]
+
+    @property
+    def z(self) -> float:
+        if len(self.current) > 2:
+            return self.current[2]
+        else:
+            return None
 
     @property
     def px(self) -> float:
@@ -81,5 +92,12 @@ class Node(object):
     def py(self) -> float:
         if self.parent:
             return self.parent[1]
+        else:
+            return None
+
+    @property
+    def pz(self) -> float:
+        if self.parent and len(self.parent) > 2:
+            return self.parent[2]
         else:
             return None
