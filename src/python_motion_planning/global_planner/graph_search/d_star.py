@@ -106,14 +106,22 @@ class DStar(GraphSearcher):
         Parameters:
             event (MouseEvent): mouse event
         """
+        # Check if click is within the plot area
+        if event.xdata is None or event.ydata is None:
+            print("Please click within the plot area!")
+            return
+            
         x, y = int(event.xdata), int(event.ydata)
+        # For 3D, use middle z-coordinate as default
+        z = self.env.z_range // 2
+        
         if x < 0 or x > self.env.x_range - 1 or y < 0 or y > self.env.y_range - 1:
             print("Please choose right area!")
         else:
-            if (x, y) not in self.obstacles:
-                print("Add obstacle at: ({}, {})".format(x, y))
-                # update obstacles
-                self.obstacles.add((x, y))
+            if (x, y, z) not in self.obstacles:
+                print("Add obstacle at: ({}, {}, {})".format(x, y, z))
+                # update obstacles - add obstacle in 3D
+                self.obstacles.add((x, y, z))
                 self.env.update(self.obstacles)
 
                 # move from start to goal, replan locally when meeting collisions

@@ -61,7 +61,7 @@ class GraphSearcher(Planner):
 
     def isCollision(self, node1: Node, node2: Node) -> bool:
         """
-        Judge collision when moving from node1 to node2.
+        Judge collision when moving from node1 to node2 in 3D space.
 
         Parameters:
             node1 (Node): node 1
@@ -70,19 +70,11 @@ class GraphSearcher(Planner):
         Returns:
             collision (bool): True if collision exists else False
         """
+        # Check if either node is an obstacle
         if node1.current in self.obstacles or node2.current in self.obstacles:
             return True
 
-        x1, y1 = node1.x, node1.y
-        x2, y2 = node2.x, node2.y
-
-        if x1 != x2 and y1 != y2:
-            if x2 - x1 == y1 - y2:
-                s1 = (min(x1, x2), min(y1, y2))
-                s2 = (max(x1, x2), max(y1, y2))
-            else:
-                s1 = (min(x1, x2), max(y1, y2))
-                s2 = (max(x1, x2), min(y1, y2))
-            if s1 in self.obstacles or s2 in self.obstacles:
-                return True
+        # For 3D, we perform basic collision detection
+        # More sophisticated 3D line-of-sight checking could be implemented here
+        # For now, we just check if start and end points are obstacle-free
         return False

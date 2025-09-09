@@ -33,10 +33,10 @@ if __name__ == '__main__':
     # plt = AStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
     # plt = Dijkstra(start=(5, 5), goal=(45, 25), env=grid_env)
     
-    plt = DStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env)  # Denne fungerer
-    # plt = DStarLite(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env)
+    # plt = DStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env)  # Denne fungerer, men ser ikke utforskningsområde
+    plt = DStarLite(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
     # plt = ThetaStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
-    # plt = GBFS(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Ser ikke utforskningsområde
+    # plt = GBFS(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne funker, men ser ikke utforskningsområde
     # plt = JPS(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
 
     
