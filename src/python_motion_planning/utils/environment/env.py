@@ -54,20 +54,15 @@ class Grid(Env):
     def __init__(self, x_range: int, y_range: int, z_range: int = None) -> None:
         super().__init__(x_range, y_range, z_range)
         # allowed motions (26 neighbors in 3D, 8 in 2D)
-        if self.z_range is not None:
-            self.motions = []
-            for dx in [-1, 0, 1]:
-                for dy in [-1, 0, 1]:
-                    for dz in [-1, 0, 1]:
-                        if dx == dy == dz == 0:
-                            continue
-                        cost = sqrt(dx**2 + dy**2 + dz**2)
-                        self.motions.append(Node((dx, dy, dz), None, cost, None))
-        else:
-            self.motions = [Node((-1, 0), None, 1, None), Node((-1, 1),  None, sqrt(2), None),
-                            Node((0, 1),  None, 1, None), Node((1, 1),   None, sqrt(2), None),
-                            Node((1, 0),  None, 1, None), Node((1, -1),  None, sqrt(2), None),
-                            Node((0, -1), None, 1, None), Node((-1, -1), None, sqrt(2), None)]
+
+        self.motions = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                for dz in [-1, 0, 1]:
+                    if dx == dy == dz == 0:
+                        continue
+                    cost = sqrt(dx**2 + dy**2 + dz**2)
+                    self.motions.append(Node((dx, dy, dz), None, cost, None))
         # obstacles
         self.obstacles = None
         self.obstacles_tree = None
