@@ -8,43 +8,66 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 
+def add_building(grid: Grid, x_offset, y_offset, length, width, height):
+    # Add obstacles
+    obstacles = grid.obstacles  # Get current obstacles (boundary walls)
+
+    for x in range(0, length + 1, 1):
+        for z in range(0, height, 1):
+            obstacles.add((x + x_offset, y_offset, z))
+    
+    for x in range(0, length + 1, 1):
+        for z in range(0, height, 1):
+            obstacles.add((x + x_offset, y_offset + width, z))
+
+    for y in range(0, width, 1):
+        for z in range(0, height, 1):
+            obstacles.add((x_offset, y + y_offset, z))
+
+    for y in range(0, width, 1):
+        for z in range(0, height, 1):
+            obstacles.add((x_offset + length, y + y_offset, z))
+
+    ## roof
+    for y in range(0, width + 1, 1):
+        for x in range(0, length + 1, 1):
+            obstacles.add((x + x_offset, y + y_offset, height))
+
+    # Update the environment after adding obstacles:
+    grid.update(obstacles)
+
+def add_tree(grid: Grid, x_offset, y_offset, height):
+    # Add obstacles
+    obstacles = grid.obstacles  # Get current obstacles (boundary walls)
+    leafoffsets = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
+    for z in range(0, height, 1):
+        obstacles.add((x_offset, y_offset, z))
+
+    for offset in leafoffsets:
+        for z in range(2, height - 1, 1):
+            obstacles.add((x_offset + offset[0], y_offset + offset[1], z))
+        
+    # Update the environment after adding obstacles:
+    grid.update(obstacles)
+
 if __name__ == '__main__':
     # Create environment with no custom obstacles (only boundary walls)
-    grid_env = Grid(100, 50, 20)
-    # grid_env.obstacles already contains boundary walls by default
-    
-    # Add obstacles
-    obstacles = grid_env.obstacles  # Get current obstacles (boundary walls)
-    
-    # Add a 3D cube obstacle in the middle:
+    grid_env = Grid(30, 50, 15)
+    add_building(grid_env, 5, 5, 4, 4, 8)       # ifi
+    add_building(grid_env, 20, 40, 7, 5, 4)     # bunnpris
+    add_building(grid_env, 18, 30, 7, 5, 10)     # høyt bygg
 
-    '''
-    center_x, center_y, center_z = 50, 25, 25
-    cube_size = 10
-    for x in range(center_x - cube_size, center_x + cube_size + 1):
-        for y in range(center_y - cube_size, center_y + cube_size + 1):
-            for z in range(center_z - cube_size, center_z + cube_size + 1):
-                if 0 <= x < 100 and 0 <= y < 100 and 0 <= z < 50:
-                    obstacles.add((x, y, z))
-    '''
+    add_tree(grid_env, 10, 20, 4)
 
-    ## Vegg nr 1
-    for x in range(5, 15, 1):
-        for z in range(0, 20, 1):
-            obstacles.add((x, 10, z))
-    
-    # Update the environment after adding obstacles:
-    grid_env.update(obstacles)
-    
-    # map_env = Map(100, 100, 50)
-
-
+    start = (7, 4, 1)
+    goal = (22, 39, 1)
 
     # -------------global planners-------------
-    plt = AStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
+    plt = AStar(start, goal, env=grid_env)
+    #plt = Dijkstra(start, goal, env=grid_env)
     #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
-    # plt = DStarLite(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = Dijkstra(start=(5, 5), goal=(45, 25), env=grid_env)
+    #plt = DStarLite(start=(5, 9, 6), goal=(25, 25, 5), env=grid_env)
     # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = JPS(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = ThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)

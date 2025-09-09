@@ -54,20 +54,15 @@ class Grid(Env):
     def __init__(self, x_range: int, y_range: int, z_range: int = None) -> None:
         super().__init__(x_range, y_range, z_range)
         # allowed motions (26 neighbors in 3D, 8 in 2D)
-        if self.z_range is not None:
-            self.motions = []
-            for dx in [-1, 0, 1]:
-                for dy in [-1, 0, 1]:
-                    for dz in [-1, 0, 1]:
-                        if dx == dy == dz == 0:
-                            continue
-                        cost = sqrt(dx**2 + dy**2 + dz**2)
-                        self.motions.append(Node((dx, dy, dz), None, cost, None))
-        else:
-            self.motions = [Node((-1, 0), None, 1, None), Node((-1, 1),  None, sqrt(2), None),
-                            Node((0, 1),  None, 1, None), Node((1, 1),   None, sqrt(2), None),
-                            Node((1, 0),  None, 1, None), Node((1, -1),  None, sqrt(2), None),
-                            Node((0, -1), None, 1, None), Node((-1, -1), None, sqrt(2), None)]
+
+        self.motions = []
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                for dz in [-1, 0, 1]:
+                    if dx == dy == dz == 0:
+                        continue
+                    cost = sqrt(dx**2 + dy**2 + dz**2)
+                    self.motions.append(Node((dx, dy, dz), None, cost, None))
         # obstacles
         self.obstacles = None
         self.obstacles_tree = None
@@ -81,28 +76,21 @@ class Grid(Env):
         z = self.z_range if self.z_range is not None else None
         obstacles = set()
 
-        if z is not None:
-            # boundary of environment for 3D
-            for i in range(x):
-                for k in range(z):
-                    obstacles.add((i, 0, k))
-                    obstacles.add((i, y - 1, k))
+        if z == None: 
+            return
+
+        for i in range(x):
+            for k in range(z):
+                obstacles.add((i, 0, k))
+                obstacles.add((i, y - 1, k))
+        for j in range(y):
+            for k in range(z):
+                obstacles.add((0, j, k))
+                obstacles.add((x - 1, j, k))
+        for i in range(x):
             for j in range(y):
-                for k in range(z):
-                    obstacles.add((0, j, k))
-                    obstacles.add((x - 1, j, k))
-            for i in range(x):
-                for j in range(y):
-                    obstacles.add((i, j, 0))
-                    obstacles.add((i, j, z - 1))
-        else:
-            # boundary for 2D
-            for i in range(x):
-                obstacles.add((i, 0))
-                obstacles.add((i, y - 1))
-            for j in range(y):
-                obstacles.add((0, j))
-                obstacles.add((x - 1, j))
+                obstacles.add((i, j, 0))
+                obstacles.add((i, j, z - 1))
 
         self.update(obstacles)
 
