@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
     add_tree(grid_env, 10, 20, 4)
 
-    start = (7, 4, 1)
+    start = (7, 4, 10)
     goal = (22, 39, 1)
 
     # -------------global planners-------------
