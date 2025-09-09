@@ -13,17 +13,17 @@ from python_motion_planning.utils import Env, Grid
 
 class DStarLite(LPAStar):
     """
-    Class for D* Lite motion planning.
+    Class for D* Lite motion planning in 3D.
 
     Parameters:
-        start (tuple): start point coordinate
-        goal (tuple): goal point coordinate
-        env (Grid): environment
+        start (tuple): start point coordinate (x, y, z)
+        goal (tuple): goal point coordinate (x, y, z)
+        env (Grid): 3D environment with z_range specified
         heuristic_type (str): heuristic function type
 
     Examples:
         >>> import python_motion_planning as pmp
-        >>> planner = pmp.DStarLite((5, 5), (45, 25), pmp.Grid(51, 31))
+        >>> planner = pmp.DStarLite((5, 5, 5), (45, 25, 15), pmp.Grid(51, 31, 21))
         >>> cost, path, _ = planner.plan()     # planning results only
         >>> planner.plot.animation(path, str(planner), cost)  # animation
         >>> planner.run()       # run both planning and animation
@@ -32,6 +32,12 @@ class DStarLite(LPAStar):
         [1] D* Lite
     """
     def __init__(self, start: tuple, goal: tuple, env: Grid, heuristic_type: str = "euclidean") -> None:
+        # Ensure 3D coordinates
+        if len(start) != 3 or len(goal) != 3:
+            raise ValueError("Start and goal must be 3D coordinates (x, y, z)")
+        if env.z_range is None:
+            raise ValueError("Environment must have z_range specified for 3D planning")
+            
         GraphSearcher.__init__(self, start, goal, env, heuristic_type)
         # start and goal
         self.start = LNode(start, float('inf'), float('inf'), None)
@@ -50,20 +56,27 @@ class DStarLite(LPAStar):
         heapq.heappush(self.U, self.goal)
 
     def __str__(self) -> str:
-        return "D* Lite"
+        return "D* Lite (3D)"
 
     def OnPress(self, event) -> None:
         """
-        Mouse button callback function.
+        Mouse button callback function for 3D environment.
+        Modifies obstacles in the middle z-plane.
 
         Parameters:
             event (MouseEvent): mouse event
         """
+        # Check if click coordinates are valid
+        if event.xdata is None or event.ydata is None:
+            print("Please click within the plot area!")
+            return
+            
         x, y = int(event.xdata), int(event.ydata)
         if x < 0 or x > self.env.x_range - 1 or y < 0 or y > self.env.y_range - 1:
             print("Please choose right area!")
         else:
-            print("Change position: x = {}, y = {}".format(x, y))
+            # For 3D, modify obstacles at middle z-level
+            z = self.env.z_range // 2
 
             cur_start, new_start = self.start, self.start
             update_start = True
@@ -85,11 +98,13 @@ class DStarLite(LPAStar):
                     self.km = self.h(cur_start, new_start)
                     new_start = cur_start
 
-                    node_change = self.map[(x, y)]
-                    if (x, y) not in self.obstacles:
-                        self.obstacles.add((x, y))
+                    node_change = self.map[(x, y, z)]
+                    toggle_coord = (x, y, z)
+
+                    if toggle_coord not in self.obstacles:
+                        self.obstacles.add(toggle_coord)
                     else:
-                        self.obstacles.remove((x, y))
+                        self.obstacles.remove(toggle_coord)
                         self.updateVertex(node_change)
                     
                     self.env.update(self.obstacles)

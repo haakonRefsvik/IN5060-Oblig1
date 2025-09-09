@@ -109,7 +109,7 @@ class ThetaStar(AStar):
 
     def lineOfSight(self, node1: Node, node2: Node) -> bool:
         """
-        Judge collision when moving from node1 to node2 using Bresenham.
+        Judge collision when moving from node1 to node2 using 3D Bresenham.
 
         Parameters:
             node1 (Node): start node
@@ -120,52 +120,91 @@ class ThetaStar(AStar):
         """
         if node1.current in self.obstacles or node2.current in self.obstacles:
             return False
+
+        x1, y1, z1 = node1.current
+        x2, y2, z2 = node2.current
+
+        # Boundary checks
+        if x1 < 0 or x1 >= self.env.x_range or y1 < 0 or y1 >= self.env.y_range or z1 < 0 or z1 >= self.env.z_range:
+            return False
+        if x2 < 0 or x2 >= self.env.x_range or y2 < 0 or y2 >= self.env.y_range or z2 < 0 or z2 >= self.env.z_range:
+            return False
+
+        # 3D Bresenham line algorithm - improved version
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1) 
+        dz = abs(z2 - z1)
         
-        x1, y1 = node1.current
-        x2, y2 = node2.current
-
-        if x1 < 0 or x1 >= self.env.x_range or y1 < 0 or y1 >= self.env.y_range:
-            return False
-        if x2 < 0 or x2 >= self.env.x_range or y2 < 0 or y2 >= self.env.y_range:
-            return False
-
-        d_x = abs(x2 - x1)
-        d_y = abs(y2 - y1)
-        s_x = 0 if (x2 - x1) == 0 else (x2 - x1) / d_x
-        s_y = 0 if (y2 - y1) == 0 else (y2 - y1) / d_y
-        x, y, e = x1, y1, 0
-
-        # check if any obstacle exists between node1 and node2
-        if d_x > d_y:
-            tau = (d_y - d_x) / 2
-            while not x == x2:
-                if e > tau:
-                    x = x + s_x
-                    e = e - d_y
-                elif e < tau:
-                    y = y + s_y
-                    e = e + d_x
-                else:
-                    x = x + s_x
-                    y = y + s_y
-                    e = e + d_x - d_y
-                if (x, y) in self.obstacles:
+        x_inc = 1 if x2 > x1 else -1
+        y_inc = 1 if y2 > y1 else -1
+        z_inc = 1 if z2 > z1 else -1
+        
+        # Find the driving axis (the one with maximum change)
+        if dx >= dy and dx >= dz:
+            # X is driving axis
+            err_1 = 2 * dy - dx
+            err_2 = 2 * dz - dx
+            x, y, z = x1, y1, z1
+            
+            while x != x2:
+                if (int(x), int(y), int(z)) in self.obstacles:
                     return False
-        # swap x and y
+                    
+                if err_1 > 0:
+                    y += y_inc
+                    err_1 -= 2 * dx
+                if err_2 > 0:
+                    z += z_inc
+                    err_2 -= 2 * dx
+                    
+                err_1 += 2 * dy
+                err_2 += 2 * dz
+                x += x_inc
+                
+        elif dy >= dx and dy >= dz:
+            # Y is driving axis
+            err_1 = 2 * dx - dy
+            err_2 = 2 * dz - dy
+            x, y, z = x1, y1, z1
+            
+            while y != y2:
+                if (int(x), int(y), int(z)) in self.obstacles:
+                    return False
+                    
+                if err_1 > 0:
+                    x += x_inc
+                    err_1 -= 2 * dy
+                if err_2 > 0:
+                    z += z_inc
+                    err_2 -= 2 * dy
+                    
+                err_1 += 2 * dx
+                err_2 += 2 * dz
+                y += y_inc
+                
         else:
-            tau = (d_x - d_y) / 2
-            while not y == y2:
-                if e > tau:
-                    y = y + s_y
-                    e = e - d_x
-                elif e < tau:
-                    x = x + s_x
-                    e = e + d_y
-                else:
-                    x = x + s_x
-                    y = y + s_y
-                    e = e + d_y - d_x
-                if (x, y) in self.obstacles:
+            # Z is driving axis
+            err_1 = 2 * dx - dz
+            err_2 = 2 * dy - dz
+            x, y, z = x1, y1, z1
+            
+            while z != z2:
+                if (int(x), int(y), int(z)) in self.obstacles:
                     return False
+                    
+                if err_1 > 0:
+                    x += x_inc
+                    err_1 -= 2 * dz
+                if err_2 > 0:
+                    y += y_inc
+                    err_2 -= 2 * dz
+                    
+                err_1 += 2 * dx
+                err_2 += 2 * dy
+                z += z_inc
         
+        # Check the final point
+        if (int(x2), int(y2), int(z2)) in self.obstacles:
+            return False
+            
         return True

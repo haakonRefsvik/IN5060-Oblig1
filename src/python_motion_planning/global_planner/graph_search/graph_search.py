@@ -42,9 +42,11 @@ class GraphSearcher(Planner):
         dx, dy, dz = goal.x - node.x, goal.y - node.y, goal.z - node.z
 
         if self.heuristic_type == "manhattan":
-            return abs(dx) + abs(dy) + abs(dz)
+            return abs(goal.x - node.x) + abs(goal.y - node.y) + abs(goal.z - node.z)
+
         elif self.heuristic_type == "euclidean":
-            return math.sqrt(dx**2 + dy**2 + dz**2)
+            return math.sqrt((goal.x - node.x)**2 + (goal.y - node.y)**2 + (goal.z - node.z)**2)
+
 
     def cost(self, node1: Node, node2: Node) -> float:
         """
@@ -57,6 +59,7 @@ class GraphSearcher(Planner):
 
     def isCollision(self, node1: Node, node2: Node) -> bool:
         """
+
         Judge collision when moving from node1 to node2 in 3D.
 
         Parameters:
@@ -66,6 +69,7 @@ class GraphSearcher(Planner):
         Returns:
             collision (bool): True if collision exists else False
         """
+
         # Direct collisions
         if node1.current in self.obstacles or node2.current in self.obstacles:
             return True

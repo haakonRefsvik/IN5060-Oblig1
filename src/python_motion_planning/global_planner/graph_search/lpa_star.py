@@ -26,7 +26,7 @@ class LNode(Node):
         self.key = key
 
     def __add__(self, node):
-        return LNode((self.x + node.x, self.y + node.y), 
+        return LNode((self.x + node.x, self.y + node.y, self.z + node.z), 
                       self.g, self.rhs, self.key)
 
     def __lt__(self, node) -> bool:
@@ -36,19 +36,31 @@ class LNode(Node):
         return "----------\ncurrent:{}\ng:{}\nrhs:{}\nkey:{}\n----------" \
             .format(self.current, self.g, self.rhs, self.key)
 
+    @property
+    def x(self) -> float:
+        return self.current[0]
+
+    @property
+    def y(self) -> float:
+        return self.current[1]
+
+    @property
+    def z(self) -> float:
+        return self.current[2]
+
 class LPAStar(GraphSearcher):
     """
-    Class for LPA* motion planning.
+    Class for LPA* motion planning in 3D.
 
     Parameters:
-        start (tuple): start point coordinate
-        goal (tuple): goal point coordinate
-        env (Grid): environment
+        start (tuple): start point coordinate (x, y, z)
+        goal (tuple): goal point coordinate (x, y, z)
+        env (Grid): 3D environment with z_range specified
         heuristic_type (str): heuristic function type
 
     Examples:
         >>> import python_motion_planning as pmp
-        >>> planner = pmp.LPAStar((5, 5), (45, 25), pmp.Grid(51, 31))
+        >>> planner = pmp.LPAStar((5, 5, 5), (45, 25, 15), pmp.Grid(51, 31, 21))
         >>> cost, path, _ = planner.plan()     # planning results only
         >>> planner.plot.animation(path, str(planner), cost)  # animation
         >>> planner.run()       # run both planning and animation
@@ -57,6 +69,12 @@ class LPAStar(GraphSearcher):
         [1] Lifelong Planning A*
     """
     def __init__(self, start: tuple, goal: tuple, env: Grid, heuristic_type: str = "euclidean") -> None:
+        # Ensure 3D coordinates
+        if len(start) != 3 or len(goal) != 3:
+            raise ValueError("Start and goal must be 3D coordinates (x, y, z)")
+        if env.z_range is None:
+            raise ValueError("Environment must have z_range specified for 3D planning")
+            
         super().__init__(start, goal, env, heuristic_type)
         # start and goal
         self.start = LNode(start, float('inf'), 0.0, None)
@@ -73,7 +91,7 @@ class LPAStar(GraphSearcher):
         heapq.heappush(self.U, self.start)
 
     def __str__(self) -> str:
-        return "Lifelong Planning A*"
+        return "Lifelong Planning A* (3D)"
 
     def plan(self) -> tuple:
         """
@@ -101,23 +119,32 @@ class LPAStar(GraphSearcher):
 
     def OnPress(self, event):
         """
-        Mouse button callback function.
+        Mouse button callback function for 3D environment.
+        Modifies obstacles in the middle z-plane.
 
         Parameters:
             event (MouseEvent): mouse event
         """
+        # Check if click coordinates are valid
+        if event.xdata is None or event.ydata is None:
+            print("Please click within the plot area!")
+            return
+            
         x, y = int(event.xdata), int(event.ydata)
         if x < 0 or x > self.env.x_range - 1 or y < 0 or y > self.env.y_range - 1:
             print("Please choose right area!")
         else:
-            print("Change position: x = {}, y = {}".format(x, y))
+            # For 3D, modify obstacles at middle z-level
+            z = self.env.z_range // 2
             self.EXPAND = []
-            node_change = self.map[(x, y)]
+            
+            node_change = self.map[(x, y, z)]
+            toggle_coord = (x, y, z)
 
-            if (x, y) not in self.obstacles:
-                self.obstacles.add((x, y))
+            if toggle_coord not in self.obstacles:
+                self.obstacles.add(toggle_coord)
             else:
-                self.obstacles.remove((x, y))
+                self.obstacles.remove(toggle_coord)
                 self.updateVertex(node_change)
             
             self.env.update(self.obstacles)
@@ -201,9 +228,10 @@ class LPAStar(GraphSearcher):
         """
         neighbors = []
         for motion in self.motions:
-            n = self.map[(node + motion).current]
-            if n.current not in self.obstacles:
-                neighbors.append(n)
+            neighbor_coord = (node + motion).current
+            # Check if neighbor is within environment bounds
+            if neighbor_coord in self.map and neighbor_coord not in self.obstacles:
+                neighbors.append(self.map[neighbor_coord])
         return neighbors
 
     def extractPath(self):

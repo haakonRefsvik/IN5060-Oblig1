@@ -8,6 +8,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 
+
 def add_building(grid: Grid, x_offset, y_offset, length, width, height):
     # Add obstacles
     obstacles = grid.obstacles  # Get current obstacles (boundary walls)
@@ -64,6 +65,9 @@ if __name__ == '__main__':
     goal = (22, 39, 1)
 
     # -------------global planners-------------
+
+
+    
     plt = AStar(start, goal, env=grid_env)
     #plt = Dijkstra(start, goal, env=grid_env)
     #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
@@ -71,6 +75,7 @@ if __name__ == '__main__':
     # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = JPS(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = ThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
+
     # plt = LazyThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = SThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = LPAStar(start=(5, 5), goal=(45, 25), env=grid_env)

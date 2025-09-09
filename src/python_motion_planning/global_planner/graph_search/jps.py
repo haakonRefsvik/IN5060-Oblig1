@@ -106,12 +106,31 @@ class JPS(AStar):
         if new_node == self.goal:
             return new_node
 
-        # diagonal
-        if motion.x and motion.y:
-            # if exists jump point at horizontal or vertical
-            x_dir = Node((motion.x, 0), None, 1, None)
-            y_dir = Node((0, motion.y), None, 1, None)
+        # 3D diagonal and oblique movements
+        if motion.x and motion.y and motion.z:
+            # All three dimensions - check all three orthogonal directions
+            x_dir = Node((motion.x, 0, 0), None, 1, None)
+            y_dir = Node((0, motion.y, 0), None, 1, None)
+            z_dir = Node((0, 0, motion.z), None, 1, None)
+            if self.jump(new_node, x_dir) or self.jump(new_node, y_dir) or self.jump(new_node, z_dir):
+                return new_node
+        elif motion.x and motion.y:
+            # XY plane diagonal
+            x_dir = Node((motion.x, 0, 0), None, 1, None)
+            y_dir = Node((0, motion.y, 0), None, 1, None)
             if self.jump(new_node, x_dir) or self.jump(new_node, y_dir):
+                return new_node
+        elif motion.x and motion.z:
+            # XZ plane diagonal
+            x_dir = Node((motion.x, 0, 0), None, 1, None)
+            z_dir = Node((0, 0, motion.z), None, 1, None)
+            if self.jump(new_node, x_dir) or self.jump(new_node, z_dir):
+                return new_node
+        elif motion.y and motion.z:
+            # YZ plane diagonal
+            y_dir = Node((0, motion.y, 0), None, 1, None)
+            z_dir = Node((0, 0, motion.z), None, 1, None)
+            if self.jump(new_node, y_dir) or self.jump(new_node, z_dir):
                 return new_node
             
         # if exists forced neighbor
@@ -122,43 +141,80 @@ class JPS(AStar):
 
     def detectForceNeighbor(self, node, motion):
         """
-        Detect forced neighbor of node.
+        Detect forced neighbor of node in 3D space.
 
         Parameters:
             node (Node): current node
             motion (Node): the motion that current node executes
 
         Returns:
-            flag (bool): True if current node has forced neighbor else Flase
+            flag (bool): True if current node has forced neighbor else False
         """
-        x, y = node.current
-        x_dir, y_dir = motion.current
-
-        # horizontal
-        if x_dir and not y_dir:
-            if (x, y + 1) in self.obstacles and \
-                (x + x_dir, y + 1) not in self.obstacles:
+        x, y, z = node.current
+        x_dir, y_dir, z_dir = motion.current
+        
+        # Horizontal movement (x-direction)
+        if x_dir and not y_dir and not z_dir:
+            for dy in [-1, 1]:
+                for dz in [-1, 1]:
+                    if (x, y + dy, z + dz) in self.obstacles and \
+                       (x + x_dir, y + dy, z + dz) not in self.obstacles:
+                        return True
+        
+        # Vertical movement (y-direction)
+        if not x_dir and y_dir and not z_dir:
+            for dx in [-1, 1]:
+                for dz in [-1, 1]:
+                    if (x + dx, y, z + dz) in self.obstacles and \
+                       (x + dx, y + y_dir, z + dz) not in self.obstacles:
+                        return True
+        
+        # Depth movement (z-direction)
+        if not x_dir and not y_dir and z_dir:
+            for dx in [-1, 1]:
+                for dy in [-1, 1]:
+                    if (x + dx, y + dy, z) in self.obstacles and \
+                       (x + dx, y + dy, z + z_dir) not in self.obstacles:
+                        return True
+        
+        # Diagonal movements in XY plane
+        if x_dir and y_dir and not z_dir:
+            if (x - x_dir, y, z) in self.obstacles and \
+               (x - x_dir, y + y_dir, z) not in self.obstacles:
                 return True
-            if (x, y - 1) in self.obstacles and \
-                (x + x_dir, y - 1) not in self.obstacles:
+            if (x, y - y_dir, z) in self.obstacles and \
+               (x + x_dir, y - y_dir, z) not in self.obstacles:
                 return True
         
-        # vertical
-        if not x_dir and y_dir:
-            if (x + 1, y) in self.obstacles and \
-                (x + 1, y + y_dir) not in self.obstacles:
+        # Diagonal movements in XZ plane
+        if x_dir and not y_dir and z_dir:
+            if (x - x_dir, y, z) in self.obstacles and \
+               (x - x_dir, y, z + z_dir) not in self.obstacles:
                 return True
-            if (x - 1, y) in self.obstacles and \
-                (x - 1, y + y_dir) not in self.obstacles:
+            if (x, y, z - z_dir) in self.obstacles and \
+               (x + x_dir, y, z - z_dir) not in self.obstacles:
                 return True
         
-        # diagonal
-        if x_dir and y_dir:
-            if (x - x_dir, y) in self.obstacles and \
-                (x - x_dir, y + y_dir) not in self.obstacles:
+        # Diagonal movements in YZ plane
+        if not x_dir and y_dir and z_dir:
+            if (x, y - y_dir, z) in self.obstacles and \
+               (x, y - y_dir, z + z_dir) not in self.obstacles:
                 return True
-            if (x, y - y_dir) in self.obstacles and \
-                (x + x_dir, y - y_dir) not in self.obstacles:
+            if (x, y, z - z_dir) in self.obstacles and \
+               (x, y + y_dir, z - z_dir) not in self.obstacles:
+                return True
+        
+        # 3D diagonal movements (all three directions)
+        if x_dir and y_dir and z_dir:
+            # Check several key forced neighbor patterns for 3D diagonal movement
+            if (x - x_dir, y, z) in self.obstacles and \
+               (x - x_dir, y + y_dir, z + z_dir) not in self.obstacles:
+                return True
+            if (x, y - y_dir, z) in self.obstacles and \
+               (x + x_dir, y - y_dir, z + z_dir) not in self.obstacles:
+                return True
+            if (x, y, z - z_dir) in self.obstacles and \
+               (x + x_dir, y + y_dir, z - z_dir) not in self.obstacles:
                 return True
         
         return False
