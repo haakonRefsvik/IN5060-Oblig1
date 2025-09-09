@@ -81,28 +81,21 @@ class Grid(Env):
         z = self.z_range if self.z_range is not None else None
         obstacles = set()
 
-        if z is not None:
-            # boundary of environment for 3D
-            for i in range(x):
-                for k in range(z):
-                    obstacles.add((i, 0, k))
-                    obstacles.add((i, y - 1, k))
+        if z == None: 
+            return
+
+        for i in range(x):
+            for k in range(z):
+                obstacles.add((i, 0, k))
+                obstacles.add((i, y - 1, k))
+        for j in range(y):
+            for k in range(z):
+                obstacles.add((0, j, k))
+                obstacles.add((x - 1, j, k))
+        for i in range(x):
             for j in range(y):
-                for k in range(z):
-                    obstacles.add((0, j, k))
-                    obstacles.add((x - 1, j, k))
-            for i in range(x):
-                for j in range(y):
-                    obstacles.add((i, j, 0))
-                    obstacles.add((i, j, z - 1))
-        else:
-            # boundary for 2D
-            for i in range(x):
-                obstacles.add((i, 0))
-                obstacles.add((i, y - 1))
-            for j in range(y):
-                obstacles.add((0, j))
-                obstacles.add((x - 1, j))
+                obstacles.add((i, j, 0))
+                obstacles.add((i, j, z - 1))
 
         self.update(obstacles)
 

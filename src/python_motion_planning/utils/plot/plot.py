@@ -13,7 +13,7 @@ import matplotlib.patches as patches
 from ..environment.env import Env, Grid, Map, Node
 
 squaresize = 40
-squaresize_explored = 5
+squaresize_explored = 10
 
 class Plot:
     def __init__(self, start, goal, env: Env):
