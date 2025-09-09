@@ -27,7 +27,7 @@ class DNode(Node):
         self.k = k
 
     def __add__(self, node):
-        return DNode((self.x + node.x, self.y + node.y), 
+        return DNode((self.x + node.x, self.y + node.y, self.z + node.z), 
                      self.parent, self.t, self.h + node.h, self.k)
 
     def __str__(self) -> str:
@@ -164,13 +164,14 @@ class DStar(GraphSearcher):
         """
         # get node in OPEN list with min k value
         node = self.min_state
-        self.EXPAND.append(node)
-
+        
         if node is None:
             return -1
 
+        self.EXPAND.append(node)
+
         # record the min k value of this iteration
-        k_old = self.min_k
+        k_old = node.k  # Use the actual node's k value instead of min_k property
         # move node from OPEN list to CLOSED list
         self.delete(node)  
 
@@ -231,7 +232,10 @@ class DStar(GraphSearcher):
         """
         Choose the minimum k value for nodes in OPEN list.
         """
-        return self.min_state.k
+        min_state = self.min_state
+        if min_state is None:
+            return float('inf')
+        return min_state.k
 
     def insert(self, node: DNode, h_new: float) -> None:
         """

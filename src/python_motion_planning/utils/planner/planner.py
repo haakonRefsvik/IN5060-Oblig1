@@ -20,7 +20,7 @@ class Planner(ABC):
         self.plot = Plot(start, goal, env)
 
     def dist(self, node1: Node, node2: Node) -> float:
-        return math.hypot(node2.x - node1.x, node2.y - node1.y)
+        return math.sqrt((node2.x - node1.x)**2 + (node2.y - node1.y)**2 + (node2.z - node1.z)**2)
     
     def angle(self, node1: Node, node2: Node) -> float:
         return math.atan2(node2.y - node1.y, node2.x - node1.x)

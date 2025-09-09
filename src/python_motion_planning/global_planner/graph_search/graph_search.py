@@ -39,9 +39,10 @@ class GraphSearcher(Planner):
             h (float): heuristic function value of node
         """
         if self.heuristic_type == "manhattan":
-            return abs(goal.x - node.x) + abs(goal.y - node.y)
+            return abs(goal.x - node.x) + abs(goal.y - node.y) + abs(goal.z - node.z)
+
         elif self.heuristic_type == "euclidean":
-            return math.hypot(goal.x - node.x, goal.y - node.y)
+            return math.sqrt((goal.x - node.x)**2 + (goal.y - node.y)**2 + (goal.z - node.z)**2)
 
     def cost(self, node1: Node, node2: Node) -> float:
         """

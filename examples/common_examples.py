@@ -10,23 +10,12 @@ from python_motion_planning import *
 
 if __name__ == '__main__':
     # Create environment with no custom obstacles (only boundary walls)
-    grid_env = Grid(100, 50, 20)
+    grid_env = Grid(20, 20, 20)
     # grid_env.obstacles already contains boundary walls by default
     
     # Add obstacles
     obstacles = grid_env.obstacles  # Get current obstacles (boundary walls)
     
-    # Add a 3D cube obstacle in the middle:
-
-    '''
-    center_x, center_y, center_z = 50, 25, 25
-    cube_size = 10
-    for x in range(center_x - cube_size, center_x + cube_size + 1):
-        for y in range(center_y - cube_size, center_y + cube_size + 1):
-            for z in range(center_z - cube_size, center_z + cube_size + 1):
-                if 0 <= x < 100 and 0 <= y < 100 and 0 <= z < 50:
-                    obstacles.add((x, y, z))
-    '''
 
     ## Vegg nr 1
     for x in range(5, 15, 1):
@@ -41,13 +30,16 @@ if __name__ == '__main__':
 
 
     # -------------global planners-------------
-    plt = AStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
-    #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
-    # plt = DStarLite(start=(5, 5), goal=(45, 25), env=grid_env)
+    # plt = AStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
     # plt = Dijkstra(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = JPS(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = ThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
+    
+    plt = DStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env)  # Denne fungerer
+    # plt = DStarLite(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env)
+    # plt = ThetaStar(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
+    # plt = GBFS(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Ser ikke utforskningsområde
+    # plt = JPS(start=(1, 1, 18), goal=(18, 18, 1), env=grid_env) # Denne fungerer
+
+    
     # plt = LazyThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = SThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = LPAStar(start=(5, 5), goal=(45, 25), env=grid_env)
