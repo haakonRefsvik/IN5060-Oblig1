@@ -38,7 +38,9 @@ class GraphSearcher(Planner):
         Returns:
             h (float): heuristic function value of node
         """
+
         dx, dy, dz = goal.x - node.x, goal.y - node.y, goal.z - node.z
+
         if self.heuristic_type == "manhattan":
             return abs(dx) + abs(dy) + abs(dz)
         elif self.heuristic_type == "euclidean":
@@ -46,17 +48,11 @@ class GraphSearcher(Planner):
 
     def cost(self, node1: Node, node2: Node) -> float:
         """
-        Calculate cost for this motion.
-
-        Parameters:
-            node1 (Node): node 1
-            node2 (Node): node 2
-
-        Returns:
-            cost (float): cost of this motion
+        Calculate motion cost with altitude penalty.
         """
         if self.isCollision(node1, node2):
             return float("inf")
+
         return self.dist(node1, node2)
 
     def isCollision(self, node1: Node, node2: Node) -> bool:
