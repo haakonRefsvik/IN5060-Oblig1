@@ -39,23 +39,30 @@ class GraphSearcher(Planner):
             h (float): heuristic function value of node
         """
 
-        dx, dy, dz = goal.x - node.x, goal.y - node.y, goal.z - node.z
-
         if self.heuristic_type == "manhattan":
             return abs(goal.x - node.x) + abs(goal.y - node.y) + abs(goal.z - node.z)
 
         elif self.heuristic_type == "euclidean":
             return math.sqrt((goal.x - node.x)**2 + (goal.y - node.y)**2 + (goal.z - node.z)**2)
 
-
     def cost(self, node1: Node, node2: Node) -> float:
         """
-        Calculate motion cost with altitude penalty.
+        Calculate motion cost with altitude reward/penalty.
+        Lower z → higher cost, higher z → lower cost.
         """
         if self.isCollision(node1, node2):
             return float("inf")
 
-        return self.dist(node1, node2)
+        base_cost = self.dist(node1, node2)
+
+        # Reward high altitude, penalize low altitude
+        if node2.z is not None:
+            # Example: z=0 → ×5, z=10 → ×0.5, z=20 → ×0.25
+            altitude_factor = 5 / (2**node2.z + 1)
+        else:
+            altitude_factor = 1.0
+
+        return base_cost * altitude_factor
 
     def isCollision(self, node1: Node, node2: Node) -> bool:
         """
