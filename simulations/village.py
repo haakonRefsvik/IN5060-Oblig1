@@ -5,6 +5,7 @@
 @update: 2025.9.10
 """
 import sys, os
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 from utils import add_building, add_tree
@@ -63,6 +64,18 @@ if __name__ == '__main__':
     # plt = DStarLite(start, goal, env=grid_env)
     # plt = GBFS(start, goal, env=grid_env)
     
-    plt.run()
+    # Time only the pathfinding computation
+    start_time = time.time()
+    cost, path, expand = plt.plan()
+    end_time = time.time()
+    
+    # Calculate computation time
+    execution_time = end_time - start_time
+    
+    # Create algorithm name with computation time
+    algorithm_name = f"{str(plt)}. computation time: {execution_time:.4f}s"
+    
+    # Show the visualization with timing info (this part is not timed)
+    plt.plot.animation(path, algorithm_name, cost, expand)
     
     print("Village simulation completed!")
