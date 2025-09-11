@@ -68,7 +68,6 @@ if __name__ == '__main__':
     goal = (22, 39, 1)
 
     # -------------global planners-------------
-
     # plt = AStar(start, goal, env=grid_env)
     #plt = Dijkstra(start, goal, env=grid_env)
     # plt = DStar(start, goal, env=grid_env)

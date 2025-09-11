@@ -37,15 +37,6 @@ class AStar(GraphSearcher):
         return "A*"
 
     def plan(self) -> tuple:
-        """
-        A* motion plan function.
-
-        Returns:
-            cost (float): path cost
-            path (list): planning path
-            expand (list): all nodes that planner has searched
-        """
-        # OPEN list (priority queue) and CLOSED list (hash table)
         OPEN = []
         heapq.heappush(OPEN, self.start)
         CLOSED = dict()
@@ -53,31 +44,28 @@ class AStar(GraphSearcher):
         while OPEN:
             node = heapq.heappop(OPEN)
 
-            # exists in CLOSED list
             if node.current in CLOSED:
                 continue
 
-            # goal found
             if node == self.goal:
                 CLOSED[node.current] = node
                 cost, path = self.extractPath(CLOSED)
                 return cost, path, list(CLOSED.values())
 
-            for node_n in self.getNeighbor(node):                
-                # exists in CLOSED list
-                if node_n.current in CLOSED:
-                    continue
-                
-                node_n.parent = node.current
-                node_n.h = self.h(node_n, self.goal)
+            for motion in self.motions:
+                neighbor = node + motion
 
-                # goal found
-                if node_n == self.goal:
-                    heapq.heappush(OPEN, node_n)
-                    break
-                
-                # update OPEN list
-                heapq.heappush(OPEN, node_n)
+                if self.isCollision(node, neighbor):
+                    continue
+                if neighbor.current in CLOSED:
+                    continue
+
+                step_cost = self.cost(node, neighbor)
+                neighbor.g = node.g + step_cost
+                neighbor.h = self.h(neighbor, self.goal)
+                neighbor.parent = node.current
+
+                heapq.heappush(OPEN, neighbor)
 
             CLOSED[node.current] = node
         return [], [], []
