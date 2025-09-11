@@ -60,21 +60,21 @@ if __name__ == '__main__':
     add_building(grid_env, 18, 30, 7, 5, 10)     # høyt bygg
 
     add_tree(grid_env, 10, 20, 4)
+    add_tree(grid_env, 15, 25, 6)
+    add_tree(grid_env, 16, 20, 8)
+    add_tree(grid_env, 18, 16, 3)
 
-    start = (7, 4, 1)
+    start = (7, 4, 10)
     goal = (22, 39, 1)
 
     # -------------global planners-------------
-
-
-    
     # plt = AStar(start, goal, env=grid_env)
-    plt = Dijkstra(start, goal, env=grid_env)
-    #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
-    #plt = DStarLite(start=(5, 9, 6), goal=(25, 25, 5), env=grid_env)
-    # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = JPS(start=(5, 5), goal=(45, 25), env=grid_env)
-    # plt = ThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
+    #plt = Dijkstra(start, goal, env=grid_env)
+    # plt = DStar(start, goal, env=grid_env)
+    # plt = DStarLite(start, goal, env=grid_env)
+    # plt = GBFS(start, goal, env=grid_env)
+    plt = JPS(start, goal, env=grid_env)
+    # plt = ThetaStar(start, goal, env=grid_env)
 
     # plt = LazyThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
     # plt = SThetaStar(start=(5, 5), goal=(45, 25), env=grid_env)
