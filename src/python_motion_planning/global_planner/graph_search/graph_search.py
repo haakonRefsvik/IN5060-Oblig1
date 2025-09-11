@@ -55,10 +55,9 @@ class GraphSearcher(Planner):
 
         base_cost = self.dist(node1, node2)
 
-        # Reward high altitude, penalize low altitude
-        if node2.z is not None:
-            # Example: z=0 → ×5, z=10 → ×0.5, z=20 → ×0.25
-            altitude_factor = 5 / (2**node2.z + 1)
+        ## If the altitude (z) is lower than 5, then double the motion cost
+        if node2.z < 5:
+            altitude_factor = 2.0
         else:
             altitude_factor = 1.0
 

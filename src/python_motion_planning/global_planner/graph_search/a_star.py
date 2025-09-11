@@ -62,7 +62,7 @@ class AStar(GraphSearcher):
 
                 step_cost = self.cost(node, neighbor)
                 neighbor.g = node.g + step_cost
-                neighbor.h = self.h(neighbor, self.goal) * 1.5
+                neighbor.h = self.h(neighbor, self.goal)
                 neighbor.parent = node.current
 
                 heapq.heappush(OPEN, neighbor)

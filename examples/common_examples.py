@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
 
     
-    plt = AStar(start, goal, env=grid_env)
-    #plt = Dijkstra(start, goal, env=grid_env)
+    # plt = AStar(start, goal, env=grid_env)
+    plt = Dijkstra(start, goal, env=grid_env)
     #plt = DStar(start=(1, 1, 10), goal=(15, 15, 5), env=grid_env)
     #plt = DStarLite(start=(5, 9, 6), goal=(25, 25, 5), env=grid_env)
     # plt = GBFS(start=(5, 5), goal=(45, 25), env=grid_env)

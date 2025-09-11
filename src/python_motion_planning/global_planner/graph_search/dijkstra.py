@@ -71,7 +71,8 @@ class Dijkstra(AStar):
                     continue
                 
                 node_n.parent = node.current
-                node_n.h = 0
+                node_n.g = node.g + self.cost(node, node_n)
+                node_n.h = 0   # no heuristic in Dijkstra
 
                 # goal found
                 if node_n == self.goal:
