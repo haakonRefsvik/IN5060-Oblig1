@@ -15,69 +15,69 @@ from utils import add_building, add_tree
 
 def create_city_environment():
     """Create a dense city environment like Manhattan with tightly packed buildings"""
-    # Create environment with boundary walls
-    grid_env = Grid(50, 60, 25)
+    # Create environment with boundary walls (scaled 5x)
+    grid_env = Grid(250, 300, 125)
     
     # Create a dense Manhattan-like grid of buildings with wider streets for visibility
-    # Row 1 - Southern edge buildings (wider spacing between buildings)
-    add_building(grid_env, 3, 3, 3, 4, 15)    # Skyscraper (30x40x150m)
-    add_building(grid_env, 9, 3, 2, 4, 12)    # High-rise (20x40x120m)
-    add_building(grid_env, 14, 3, 3, 4, 20)   # Skyscraper (30x40x200m)
-    add_building(grid_env, 20, 3, 2, 4, 18)   # Tall building (20x40x180m)
-    add_building(grid_env, 25, 3, 3, 4, 8)    # Mid-rise (30x40x80m)
-    add_building(grid_env, 31, 3, 2, 4, 22)   # Skyscraper (20x40x220m)
-    add_building(grid_env, 36, 3, 3, 4, 14)   # High-rise (30x40x140m)
-    add_building(grid_env, 42, 3, 2, 4, 16)   # Tall building (20x40x160m)
+    # Row 1 - Southern edge buildings (scaled 5x)
+    add_building(grid_env, 15, 15, 15, 20, 75)    # Skyscraper (150x200x750m)
+    add_building(grid_env, 45, 15, 10, 20, 60)    # High-rise (100x200x600m)
+    add_building(grid_env, 70, 15, 15, 20, 100)   # Skyscraper (150x200x1000m)
+    add_building(grid_env, 100, 15, 10, 20, 90)   # Tall building (100x200x900m)
+    add_building(grid_env, 125, 15, 15, 20, 40)   # Mid-rise (150x200x400m)
+    add_building(grid_env, 155, 15, 10, 20, 110)  # Skyscraper (100x200x1100m)
+    add_building(grid_env, 180, 15, 15, 20, 70)   # High-rise (150x200x700m)
+    add_building(grid_env, 210, 15, 10, 20, 80)   # Tall building (100x200x800m)
     
-    # Row 2 - Second street (y=10, wider gap from first row)
-    add_building(grid_env, 3, 10, 2, 3, 18)   # Narrow skyscraper (20x30x180m)
-    add_building(grid_env, 8, 10, 3, 3, 25)   # Super tall (30x30x250m)
-    add_building(grid_env, 14, 10, 2, 3, 14)  # High-rise (20x30x140m)
-    add_building(grid_env, 19, 10, 3, 3, 12)  # Wide building (30x30x120m)
-    add_building(grid_env, 25, 10, 2, 3, 20)  # Skyscraper (20x30x200m)
-    add_building(grid_env, 30, 10, 3, 3, 16)  # Tall building (30x30x160m)
-    add_building(grid_env, 36, 10, 2, 3, 22)  # Skyscraper (20x30x220m)
-    add_building(grid_env, 41, 10, 3, 3, 14)  # High-rise (30x30x140m)
+    # Row 2 - Second street (y=50, scaled 5x)
+    add_building(grid_env, 15, 50, 10, 15, 90)   # Narrow skyscraper (100x150x900m)
+    add_building(grid_env, 40, 50, 15, 15, 125)  # Super tall (150x150x1250m)
+    add_building(grid_env, 70, 50, 10, 15, 70)   # High-rise (100x150x700m)
+    add_building(grid_env, 95, 50, 15, 15, 60)   # Wide building (150x150x600m)
+    add_building(grid_env, 125, 50, 10, 15, 100) # Skyscraper (100x150x1000m)
+    add_building(grid_env, 150, 50, 15, 15, 80)  # Tall building (150x150x800m)
+    add_building(grid_env, 180, 50, 10, 15, 110) # Skyscraper (100x150x1100m)
+    add_building(grid_env, 205, 50, 15, 15, 70)  # High-rise (150x150x700m)
     
-    # Row 3 - Third street (y=17)
-    add_building(grid_env, 3, 17, 3, 4, 24)   # Skyscraper (30x40x240m)
-    add_building(grid_env, 9, 17, 2, 4, 11)   # Mid-rise (20x40x110m)
-    add_building(grid_env, 14, 17, 3, 4, 19)  # Tall building (30x40x190m)
-    add_building(grid_env, 20, 17, 2, 4, 15)  # High-rise (20x40x150m)
-    add_building(grid_env, 25, 17, 3, 4, 21)  # Skyscraper (30x40x210m)
-    add_building(grid_env, 31, 17, 2, 4, 13)  # Office (20x40x130m)
-    add_building(grid_env, 36, 17, 3, 4, 17)  # Tall building (30x40x170m)
-    add_building(grid_env, 42, 17, 2, 4, 23)  # Skyscraper (20x40x230m)
+    # Row 3 - Third street (y=85, scaled 5x)
+    add_building(grid_env, 15, 85, 15, 20, 120)  # Skyscraper (150x200x1200m)
+    add_building(grid_env, 45, 85, 10, 20, 55)   # Mid-rise (100x200x550m)
+    add_building(grid_env, 70, 85, 15, 20, 95)   # Tall building (150x200x950m)
+    add_building(grid_env, 100, 85, 10, 20, 75)  # High-rise (100x200x750m)
+    add_building(grid_env, 125, 85, 15, 20, 105) # Skyscraper (150x200x1050m)
+    add_building(grid_env, 155, 85, 10, 20, 65)  # Office (100x200x650m)
+    add_building(grid_env, 180, 85, 15, 20, 85)  # Tall building (150x200x850m)
+    add_building(grid_env, 210, 85, 10, 20, 115) # Skyscraper (100x200x1150m)
     
-    # Row 4 - Fourth street (y=24)
-    add_building(grid_env, 3, 24, 2, 3, 16)   # High-rise (20x30x160m)
-    add_building(grid_env, 8, 24, 3, 3, 20)   # Skyscraper (30x30x200m)
-    add_building(grid_env, 14, 24, 2, 3, 13)  # Office (20x30x130m)
-    add_building(grid_env, 19, 24, 3, 3, 18)  # Wide building (30x30x180m)
-    add_building(grid_env, 25, 24, 2, 3, 24)  # Skyscraper (20x30x240m)
-    add_building(grid_env, 30, 24, 3, 3, 11)  # Mid-rise (30x30x110m)
-    add_building(grid_env, 36, 24, 2, 3, 19)  # Tall building (20x30x190m)
-    add_building(grid_env, 41, 24, 3, 3, 15)  # High-rise (30x30x150m)
+    # Row 4 - Fourth street (y=120, scaled 5x)
+    add_building(grid_env, 15, 120, 10, 15, 80)   # High-rise (100x150x800m)
+    add_building(grid_env, 40, 120, 15, 15, 100)  # Skyscraper (150x150x1000m)
+    add_building(grid_env, 70, 120, 10, 15, 65)   # Office (100x150x650m)
+    add_building(grid_env, 95, 120, 15, 15, 90)   # Wide building (150x150x900m)
+    add_building(grid_env, 125, 120, 10, 15, 120) # Skyscraper (100x150x1200m)
+    add_building(grid_env, 150, 120, 15, 15, 55)  # Mid-rise (150x150x550m)
+    add_building(grid_env, 180, 120, 10, 15, 95)  # Tall building (100x150x950m)
+    add_building(grid_env, 205, 120, 15, 15, 75)  # High-rise (150x150x750m)
     
-    # Row 5 - Fifth street (y=31)
-    add_building(grid_env, 3, 31, 3, 4, 22)   # Skyscraper (30x40x220m)
-    add_building(grid_env, 9, 31, 2, 4, 14)   # High-rise (20x40x140m)
-    add_building(grid_env, 14, 31, 3, 4, 16)  # Tall building (30x40x160m)
-    add_building(grid_env, 20, 31, 2, 4, 20)  # Skyscraper (20x40x200m)
-    add_building(grid_env, 25, 31, 3, 4, 10)  # Mid-rise (30x40x100m)
-    add_building(grid_env, 31, 31, 2, 4, 18)  # Tall building (20x40x180m)
-    add_building(grid_env, 36, 31, 3, 4, 23)  # Skyscraper (30x40x230m)
-    add_building(grid_env, 42, 31, 2, 4, 12)  # Office (20x40x120m)
+    # Row 5 - Fifth street (y=155, scaled 5x)
+    add_building(grid_env, 15, 155, 15, 20, 110)  # Skyscraper (150x200x1100m)
+    add_building(grid_env, 45, 155, 10, 20, 70)   # High-rise (100x200x700m)
+    add_building(grid_env, 70, 155, 15, 20, 80)   # Tall building (150x200x800m)
+    add_building(grid_env, 100, 155, 10, 20, 100) # Skyscraper (100x200x1000m)
+    add_building(grid_env, 125, 155, 15, 20, 50)  # Mid-rise (150x200x500m)
+    add_building(grid_env, 155, 155, 10, 20, 90)  # Tall building (100x200x900m)
+    add_building(grid_env, 180, 155, 15, 20, 115) # Skyscraper (150x200x1150m)
+    add_building(grid_env, 210, 155, 10, 20, 60)  # Office (100x200x600m)
     
-    # Row 6 - Sixth street (y=38)
-    add_building(grid_env, 3, 38, 2, 3, 17)   # High-rise (20x30x170m)
-    add_building(grid_env, 8, 38, 3, 3, 21)   # Skyscraper (30x30x210m)
-    add_building(grid_env, 14, 38, 2, 3, 14)  # Office (20x30x140m)
-    add_building(grid_env, 19, 38, 3, 3, 25)  # Super tall (30x30x250m)
-    add_building(grid_env, 25, 38, 2, 3, 11)  # Mid-rise (20x30x110m)
-    add_building(grid_env, 30, 38, 3, 3, 18)  # Tall building (30x30x180m)
-    add_building(grid_env, 36, 38, 2, 3, 22)  # Skyscraper (20x30x220m)
-    add_building(grid_env, 41, 38, 3, 3, 13)  # Office (30x30x130m)
+    # Row 6 - Sixth street (y=190, scaled 5x)
+    add_building(grid_env, 15, 190, 10, 15, 85)   # High-rise (100x150x850m)
+    add_building(grid_env, 40, 190, 15, 15, 105)  # Skyscraper (150x150x1050m)
+    add_building(grid_env, 70, 190, 10, 15, 70)   # Office (100x150x700m)
+    add_building(grid_env, 95, 190, 15, 15, 125)  # Super tall (150x150x1250m)
+    add_building(grid_env, 125, 190, 10, 15, 55)  # Mid-rise (100x150x550m)
+    add_building(grid_env, 150, 190, 15, 15, 90)  # Tall building (150x150x900m)
+    add_building(grid_env, 180, 190, 10, 15, 110) # Skyscraper (100x150x1100m)
+    add_building(grid_env, 205, 190, 15, 15, 65)  # Office (150x150x650m)
     
     # Row 7 - Seventh street (y=45)
     add_building(grid_env, 3, 45, 3, 4, 15)   # High-rise (30x40x150m)
@@ -87,26 +87,35 @@ def create_city_environment():
     add_building(grid_env, 25, 45, 3, 4, 20)  # Skyscraper (30x40x200m)
     add_building(grid_env, 31, 45, 2, 4, 14)  # High-rise (20x40x140m)
     add_building(grid_env, 36, 45, 3, 4, 21)  # Skyscraper (30x40x210m)
-    add_building(grid_env, 42, 45, 2, 4, 11)  # Mid-rise (20x40x110m)
     
-    # Row 8 - Eighth street (y=52) 
-    add_building(grid_env, 3, 52, 2, 3, 19)   # Tall building (20x30x190m)
-    add_building(grid_env, 8, 52, 3, 3, 13)   # Office (30x30x130m)
-    add_building(grid_env, 14, 52, 2, 3, 22)  # Skyscraper (20x30x220m)
-    add_building(grid_env, 19, 52, 3, 3, 15)  # Wide building (30x30x150m)
-    add_building(grid_env, 25, 52, 2, 3, 18)  # Tall building (20x30x180m)
-    add_building(grid_env, 30, 52, 3, 3, 24)  # Skyscraper (30x30x240m)
-    add_building(grid_env, 36, 52, 2, 3, 12)  # Office (20x30x120m)
-    add_building(grid_env, 41, 52, 3, 3, 20)  # Skyscraper (30x30x200m)
+    # Row 7 - Seventh street (y=225, scaled 5x)
+    add_building(grid_env, 15, 225, 15, 20, 75)   # High-rise (150x200x750m)
+    add_building(grid_env, 45, 225, 10, 20, 115)  # Skyscraper (100x200x1150m)
+    add_building(grid_env, 70, 225, 15, 20, 60)   # Wide building (150x200x600m)
+    add_building(grid_env, 100, 225, 10, 20, 85)  # Tall building (100x200x850m)
+    add_building(grid_env, 125, 225, 15, 20, 100) # Skyscraper (150x200x1000m)
+    add_building(grid_env, 155, 225, 10, 20, 70)  # High-rise (100x200x700m)
+    add_building(grid_env, 180, 225, 15, 20, 105) # Skyscraper (150x200x1050m)
+    add_building(grid_env, 210, 225, 10, 20, 55)  # Mid-rise (100x200x550m)
     
-    # Add minimal trees for small parks/plazas (placed in wider street intersections)
-    add_tree(grid_env, 12, 7, 4)   # Small park tree in street gap
-    add_tree(grid_env, 23, 14, 5)  # Plaza tree in intersection
-    add_tree(grid_env, 17, 21, 3)  # Street tree in wide area
-    add_tree(grid_env, 34, 28, 4)  # Park tree in open space
-    add_tree(grid_env, 28, 35, 6)  # Larger park tree in plaza
-    add_tree(grid_env, 12, 42, 4)  # Plaza tree in intersection
-    add_tree(grid_env, 39, 49, 5)  # Street tree in northern area
+    # Row 8 - Eighth street (y=260, scaled 5x)
+    add_building(grid_env, 15, 260, 10, 15, 95)   # Tall building (100x150x950m)
+    add_building(grid_env, 40, 260, 15, 15, 65)   # Office (150x150x650m)
+    add_building(grid_env, 70, 260, 10, 15, 110)  # Skyscraper (100x150x1100m)
+    add_building(grid_env, 95, 260, 15, 15, 75)   # Wide building (150x150x750m)
+    add_building(grid_env, 125, 260, 10, 15, 90)  # Tall building (100x150x900m)
+    add_building(grid_env, 150, 260, 15, 15, 120) # Skyscraper (150x150x1200m)
+    add_building(grid_env, 180, 260, 10, 15, 60)  # Office (100x150x600m)
+    add_building(grid_env, 205, 260, 15, 15, 100) # Skyscraper (150x150x1000m)
+    
+    # Add minimal trees for small parks/plazas (scaled 5x)
+    add_tree(grid_env, 60, 35, 20)   # Small park tree in street gap
+    add_tree(grid_env, 115, 70, 25)  # Plaza tree in intersection
+    add_tree(grid_env, 85, 105, 15)  # Street tree in wide area
+    add_tree(grid_env, 170, 140, 20) # Park tree in open space
+    add_tree(grid_env, 140, 175, 30) # Larger park tree in plaza
+    add_tree(grid_env, 60, 210, 20)  # Plaza tree in intersection
+    add_tree(grid_env, 195, 245, 25) # Street tree in northern area
     
     return grid_env
 
@@ -115,9 +124,9 @@ if __name__ == '__main__':
     # Create city environment
     grid_env = create_city_environment()
     
-    # Set start and goal points for urban navigation
-    start = (1, 1, 1)
-    goal = (43, 56, 1)
+    # Set start and goal points for urban navigation (scaled 5x)
+    start = (5, 5, 5)
+    goal = (215, 280, 5)
 
     plt = algopicker()(start, goal, env=grid_env)
     

@@ -16,22 +16,22 @@ from utils import add_building, add_tree
 
 def create_countryside_environment():
     """Create a countryside environment with scattered trees and minimal buildings"""
-    # Create environment with boundary walls
-    grid_env = Grid(40, 60, 12)
+    # Create environment with boundary walls (scaled 5x)
+    grid_env = Grid(200, 300, 60)
     
-    # Add scattered trees throughout the countryside
-    add_tree(grid_env, 8, 15, 5)
-    add_tree(grid_env, 12, 8, 7)
-    add_tree(grid_env, 15, 25, 6)
-    add_tree(grid_env, 32, 18, 7)
-    add_tree(grid_env, 35, 38, 5)
-    add_tree(grid_env, 10, 42, 4)
+    # Add scattered trees throughout the countryside (scaled 5x)
+    add_tree(grid_env, 40, 75, 25)
+    add_tree(grid_env, 60, 40, 35)
+    add_tree(grid_env, 75, 125, 30)
+    add_tree(grid_env, 160, 90, 35)
+    add_tree(grid_env, 175, 190, 25)
+    add_tree(grid_env, 50, 210, 20)
     
-    # Add a few rural buildings (barn, farmhouse)
-    # Each unit = 10m, so 3x2x2 = 30x20x20m farmhouse
-    add_building(grid_env, 5, 5, 3, 2, 2)     # Small farmhouse (30x20x20m)
-    add_building(grid_env, 25, 8, 4, 3, 3)    # Barn (40x30x30m)
-    add_building(grid_env, 15, 50, 2, 2, 2)   # Small shed (20x20x20m)
+    # Add a few rural buildings (barn, farmhouse) (scaled 5x)
+    # Each unit = 10m, so 15x10x10 = 150x100x100m farmhouse
+    add_building(grid_env, 25, 25, 15, 10, 10)     # Small farmhouse (150x100x100m)
+    add_building(grid_env, 125, 40, 20, 15, 15)    # Barn (200x150x150m)
+    add_building(grid_env, 75, 250, 10, 10, 10)    # Small shed (100x100x100m)
     
     return grid_env
 
@@ -40,9 +40,9 @@ if __name__ == '__main__':
     # Create countryside environment
     grid_env = create_countryside_environment()
     
-    # Set start and goal points
-    start = (3, 3, 1)
-    goal = (35, 55, 1)
+    # Set start and goal points (scaled 5x)
+    start = (15, 15, 5)
+    goal = (175, 275, 5)
 
     plt = algopicker()(start, goal, env=grid_env)
 
