@@ -13,33 +13,33 @@ from utils import add_building, add_tree
 
 def create_village_environment():
     """Create a village environment with small buildings and decorative trees"""
-    # Create environment with boundary walls
-    grid_env = Grid(35, 45, 10)
+    # Create environment with boundary walls (scaled 10x)
+    grid_env = Grid(350, 450, 100)
     
-    # Add village buildings (houses, shops, community buildings)
-    # Each unit = 10m, so 2x3x2 = 20x30x20m house
-    add_building(grid_env, 5, 8, 2, 2, 2)     # House 1 (20x20x20m)
-    add_building(grid_env, 12, 6, 3, 2, 2)    # House 2 (30x20x20m)
-    add_building(grid_env, 20, 8, 2, 2, 2)    # House 3 (20x20x20m)
-    add_building(grid_env, 28, 10, 2, 2, 2)   # Small house (20x20x20m)
+    # Add village buildings (houses, shops, community buildings) (scaled 10x)
+    # Each unit = 10m, so 20x20x20 = 200x200x200m house
+    add_building(grid_env, 50, 80, 20, 20, 20)     # House 1 (200x200x200m)
+    add_building(grid_env, 120, 60, 30, 20, 20)    # House 2 (300x200x200m)
+    add_building(grid_env, 200, 80, 20, 20, 20)    # House 3 (200x200x200m)
+    add_building(grid_env, 280, 100, 20, 20, 20)   # Small house (200x200x200m)
     
-    add_building(grid_env, 8, 20, 3, 3, 3)    # Village shop (30x30x30m)
-    add_building(grid_env, 18, 25, 4, 3, 3)   # Community center (40x30x30m)
-    add_building(grid_env, 30, 30, 2, 2, 2)   # Another house (20x20x20m)
+    add_building(grid_env, 80, 200, 30, 30, 30)    # Village shop (300x300x300m)
+    add_building(grid_env, 180, 250, 40, 30, 30)   # Community center (400x300x300m)
+    add_building(grid_env, 300, 300, 20, 20, 20)   # Another house (200x200x200m)
     
-    add_building(grid_env, 5, 35, 3, 2, 2)    # House near edge (30x20x20m)
-    add_building(grid_env, 15, 38, 2, 2, 2)   # Small cottage (20x20x20m)
-    add_building(grid_env, 25, 40, 3, 2, 2)   # Larger house (30x20x20m)
+    add_building(grid_env, 50, 350, 30, 20, 20)    # House near edge (300x200x200m)
+    add_building(grid_env, 150, 380, 20, 20, 20)   # Small cottage (200x200x200m)
+    add_building(grid_env, 250, 400, 30, 20, 20)   # Larger house (300x200x200m)
     
-    # Add trees for decoration around the village
-    add_tree(grid_env, 3, 15, 6)
-    add_tree(grid_env, 16, 15, 5)
-    add_tree(grid_env, 22, 18, 7)
-    add_tree(grid_env, 32, 20, 4)
-    add_tree(grid_env, 10, 32, 8)
-    add_tree(grid_env, 20, 35, 6)
-    add_tree(grid_env, 30, 25, 5)
-    add_tree(grid_env, 14, 42, 4)
+    # Add trees for decoration around the village (scaled 10x)
+    add_tree(grid_env, 30, 150, 60)
+    add_tree(grid_env, 160, 150, 50)
+    add_tree(grid_env, 220, 180, 70)
+    add_tree(grid_env, 320, 200, 40)
+    add_tree(grid_env, 100, 320, 80)
+    add_tree(grid_env, 200, 350, 60)
+    add_tree(grid_env, 300, 250, 50)
+    add_tree(grid_env, 140, 420, 40)
     
     return grid_env
 
@@ -48,21 +48,18 @@ if __name__ == '__main__':
     # Create village environment
     grid_env = create_village_environment()
     
-    # Set start and goal points
-    start = (2, 2, 1)
-    goal = (32, 42, 1)
+    # Set start and goal points (scaled 10x)
+    start = (20, 20, 10)
+    goal = (320, 420, 10)
     
     # Choose and run a pathfinding algorithm
     # You can uncomment different algorithms to test them
     
     # Global planners
-    plt = AStar(start, goal, env=grid_env)
+    # plt = AStar(start, goal, env=grid_env)
     # plt = Dijkstra(start, goal, env=grid_env)
     # plt = JPS(start, goal, env=grid_env)
-    # plt = ThetaStar(start, goal, env=grid_env)
-    # plt = DStar(start, goal, env=grid_env)
-    # plt = DStarLite(start, goal, env=grid_env)
-    # plt = GBFS(start, goal, env=grid_env)
+    plt = GBFS(start, goal, env=grid_env)
     
     # Time only the pathfinding computation
     start_time = time.time()

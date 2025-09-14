@@ -13,22 +13,22 @@ from utils import add_building, add_tree
 
 def create_countryside_environment():
     """Create a countryside environment with scattered trees and minimal buildings"""
-    # Create environment with boundary walls
-    grid_env = Grid(40, 60, 12)
+    # Create environment with boundary walls (scaled 10x)
+    grid_env = Grid(400, 600, 120)
     
-    # Add scattered trees throughout the countryside
-    add_tree(grid_env, 8, 15, 5)
-    add_tree(grid_env, 12, 8, 7)
-    add_tree(grid_env, 15, 25, 6)
-    add_tree(grid_env, 32, 18, 7)
-    add_tree(grid_env, 35, 38, 5)
-    add_tree(grid_env, 10, 42, 4)
+    # Add scattered trees throughout the countryside (scaled 10x)
+    add_tree(grid_env, 80, 150, 50)
+    add_tree(grid_env, 120, 80, 70)
+    add_tree(grid_env, 150, 250, 60)
+    add_tree(grid_env, 320, 180, 70)
+    add_tree(grid_env, 350, 380, 50)
+    add_tree(grid_env, 100, 420, 40)
     
-    # Add a few rural buildings (barn, farmhouse)
-    # Each unit = 10m, so 3x2x2 = 30x20x20m farmhouse
-    add_building(grid_env, 5, 5, 3, 2, 2)     # Small farmhouse (30x20x20m)
-    add_building(grid_env, 25, 8, 4, 3, 3)    # Barn (40x30x30m)
-    add_building(grid_env, 15, 50, 2, 2, 2)   # Small shed (20x20x20m)
+    # Add a few rural buildings (barn, farmhouse) (scaled 10x)
+    # Each unit = 10m, so 30x20x20 = 300x200x200m farmhouse
+    add_building(grid_env, 50, 50, 30, 20, 20)     # Small farmhouse (300x200x200m)
+    add_building(grid_env, 250, 80, 40, 30, 30)    # Barn (400x300x300m)
+    add_building(grid_env, 150, 500, 20, 20, 20)   # Small shed (200x200x200m)
     
     return grid_env
 
@@ -37,20 +37,17 @@ if __name__ == '__main__':
     # Create countryside environment
     grid_env = create_countryside_environment()
     
-    # Set start and goal points
-    start = (3, 3, 1)
-    goal = (35, 55, 1)
+    # Set start and goal points (scaled 10x)
+    start = (30, 30, 10)
+    goal = (350, 550, 10)
     
     # Choose and run a pathfinding algorithm
     # You can uncomment different algorithms to test them
     
     # Global planners
-    plt = AStar(start, goal, env=grid_env)
+    # plt = AStar(start, goal, env=grid_env)
     # plt = Dijkstra(start, goal, env=grid_env)
-    # plt = JPS(start, goal, env=grid_env)
-    # plt = ThetaStar(start, goal, env=grid_env) # 61 score
-    # plt = DStar(start, goal, env=grid_env)
-    # plt = DStarLite(start, goal, env=grid_env)
+    plt = JPS(start, goal, env=grid_env)
     # plt = GBFS(start, goal, env=grid_env)
     
     # Time only the pathfinding computation
