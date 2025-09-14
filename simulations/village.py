@@ -6,6 +6,8 @@
 """
 import sys, os
 import time
+
+from algopicker import algopicker
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 from utils import add_building, add_tree
@@ -56,13 +58,7 @@ if __name__ == '__main__':
     # You can uncomment different algorithms to test them
     
     # Global planners
-    plt = AStar(start, goal, env=grid_env)
-    # plt = Dijkstra(start, goal, env=grid_env)
-    # plt = JPS(start, goal, env=grid_env)
-    # plt = ThetaStar(start, goal, env=grid_env)
-    # plt = DStar(start, goal, env=grid_env)
-    # plt = DStarLite(start, goal, env=grid_env)
-    # plt = GBFS(start, goal, env=grid_env)
+    plt = algopicker()(start, goal, env=grid_env)
     
     # Time only the pathfinding computation
     start_time = time.time()

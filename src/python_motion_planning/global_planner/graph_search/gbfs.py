@@ -34,15 +34,6 @@ class GBFS(AStar):
         return "Greedy Best First Search(GBFS)"
 
     def plan(self) -> tuple:
-        """
-        GBFS motion plan function.
-
-        Returns:
-            cost (float): path cost
-            path (list): planning path
-            expand (list): all nodes that planner has searched
-        """
-        # OPEN list (priority queue) and CLOSED list (hash table)
         OPEN = []
         heapq.heappush(OPEN, self.start)
         CLOSED = dict()
@@ -50,36 +41,36 @@ class GBFS(AStar):
         while OPEN:
             node = heapq.heappop(OPEN)
 
-            # exists in CLOSED list
             if node.current in CLOSED:
                 continue
 
-            # goal found
             if node == self.goal:
                 CLOSED[node.current] = node
                 cost, path = self.extractPath(CLOSED)
                 return cost, path, list(CLOSED.values())
 
             for node_n in self.getNeighbor(node):
-             
-                # hit the obstacle
                 if node_n.current in self.obstacles:
                     continue
-                
-                # exists in CLOSED list
                 if node_n.current in CLOSED:
                     continue
-                
-                node_n.parent = node.current
-                node_n.h = self.h(node_n, self.goal)
-                node_n.g = 0
 
-                # goal found
+                node_n.parent = node.current
+
+                # normal heuristic
+                h_val = self.h(node_n, self.goal)
+
+                # ✅ altitude penalty for z < 5
+                if node_n.z is not None and node_n.z < 5:
+                    h_val *= 2.0   # increase "costliness" in priority
+
+                node_n.h = h_val
+                node_n.g = 0  # still greedy best-first (ignores true g)
+
                 if node_n == self.goal:
                     heapq.heappush(OPEN, node_n)
                     break
-                
-                # update OPEN set
+
                 heapq.heappush(OPEN, node_n)
 
             CLOSED[node.current] = node

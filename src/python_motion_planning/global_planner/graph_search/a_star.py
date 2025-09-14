@@ -99,7 +99,7 @@ class AStar(GraphSearcher):
         path = [node.current]
         while node != self.start:
             node_parent = closed_list[node.parent]
-            cost += self.dist(node, node_parent)
+            cost += self.cost(node, node_parent)
             node = node_parent
             path.append(node.current)
         return cost, path

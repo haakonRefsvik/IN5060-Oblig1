@@ -6,6 +6,9 @@
 """
 import sys, os
 import time
+import argparse
+
+from algopicker import algopicker
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from python_motion_planning import *
 from utils import add_building, add_tree
@@ -40,19 +43,9 @@ if __name__ == '__main__':
     # Set start and goal points
     start = (3, 3, 1)
     goal = (35, 55, 1)
-    
-    # Choose and run a pathfinding algorithm
-    # You can uncomment different algorithms to test them
-    
-    # Global planners
-    plt = AStar(start, goal, env=grid_env)
-    # plt = Dijkstra(start, goal, env=grid_env)
-    # plt = JPS(start, goal, env=grid_env)
-    # plt = ThetaStar(start, goal, env=grid_env) # 61 score
-    # plt = DStar(start, goal, env=grid_env)
-    # plt = DStarLite(start, goal, env=grid_env)
-    # plt = GBFS(start, goal, env=grid_env)
-    
+
+    plt = algopicker()(start, goal, env=grid_env)
+
     # Time only the pathfinding computation
     start_time = time.time()
     cost, path, expand = plt.plan()
