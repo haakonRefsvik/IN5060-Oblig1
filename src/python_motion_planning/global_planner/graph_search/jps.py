@@ -37,107 +37,70 @@ class JPS(AStar):
 
     def plan(self) -> tuple:
         """
-        JPS motion plan function.
-
+        Optimized JPS plan function.
         Returns:
-            cost (float): path cost
-            path (list): planning path
-            expand (list): all nodes that planner has searched
+            cost (float), path (list), expand (list)
         """
-        # OPEN list (priority queue) and CLOSED list (hash table)
         OPEN = []
-        heapq.heappush(OPEN, self.start)
+        self.start.g = 0
+        self.start.h = self.h(self.start, self.goal)
+        self.start.f = self.start.g + self.start.h
+        heapq.heappush(OPEN, (self.start.f, self.start))
         CLOSED = dict()
 
         while OPEN:
-            node = heapq.heappop(OPEN)
+            _, node = heapq.heappop(OPEN)
 
-            # exists in CLOSED list
             if node.current in CLOSED:
                 continue
 
-            # goal found
+            CLOSED[node.current] = node
+
             if node == self.goal:
-                CLOSED[node.current] = node
                 cost, path = self.extractPath(CLOSED)
                 return cost, path, list(CLOSED.values())
 
-            jp_list = []
             for motion in self.motions:
                 jp = self.jump(node, motion)
-                # exists and not in CLOSED list
                 if jp and jp.current not in CLOSED:
-                    jp.parent = node.current
+                    step_cost = self.cost(node, jp)
+                    jp.g = node.g + step_cost
                     jp.h = self.h(jp, self.goal)
-                    jp_list.append(jp)
+                    jp.f = jp.g + jp.h
+                    jp.parent = node.current
+                    heapq.heappush(OPEN, (jp.f, jp))
 
-            for jp in jp_list:
-                # update OPEN list
-                heapq.heappush(OPEN, jp)
-
-                # goal found
-                if jp == self.goal:
-                    break
-
-            CLOSED[node.current] = node
         return [], [], []
 
     def jump(self, node: Node, motion: Node):
         """
-        Jumping search recursively.
-
-        Parameters:
-            node (Node): current node
-            motion (Node): the motion that current node executes
-
-        Returns:
-            jump_point (Node): jump point or None if searching fails
+        Iterative jump in 3D. Stops at forced neighbor, obstacle, or goal.
         """
-        # explore a new node
-        new_node = node + motion
-        new_node.parent = node.current
-        new_node.h = self.h(new_node, self.goal)
+        current = Node(node.current, node.parent, node.g, node.h)
 
-        # hit the obstacle
-        if new_node.current in self.obstacles:
-            return None
+        while True:
+            # Step in motion direction
+            current = current + motion
 
-        # goal found
-        if new_node == self.goal:
-            return new_node
+            # Stop if outside grid or obstacle
+            x, y, z = current.current
+            if not (0 <= x < self.env.x_range and 0 <= y < self.env.y_range and 0 <= z < self.env.z_range):
+                return None
+            if current.current in self.obstacles:
+                return None
 
-        # 3D diagonal and oblique movements
-        if motion.x and motion.y and motion.z:
-            # All three dimensions - check all three orthogonal directions
-            x_dir = Node((motion.x, 0, 0), None, 1, None)
-            y_dir = Node((0, motion.y, 0), None, 1, None)
-            z_dir = Node((0, 0, motion.z), None, 1, None)
-            if self.jump(new_node, x_dir) or self.jump(new_node, y_dir) or self.jump(new_node, z_dir):
-                return new_node
-        elif motion.x and motion.y:
-            # XY plane diagonal
-            x_dir = Node((motion.x, 0, 0), None, 1, None)
-            y_dir = Node((0, motion.y, 0), None, 1, None)
-            if self.jump(new_node, x_dir) or self.jump(new_node, y_dir):
-                return new_node
-        elif motion.x and motion.z:
-            # XZ plane diagonal
-            x_dir = Node((motion.x, 0, 0), None, 1, None)
-            z_dir = Node((0, 0, motion.z), None, 1, None)
-            if self.jump(new_node, x_dir) or self.jump(new_node, z_dir):
-                return new_node
-        elif motion.y and motion.z:
-            # YZ plane diagonal
-            y_dir = Node((0, motion.y, 0), None, 1, None)
-            z_dir = Node((0, 0, motion.z), None, 1, None)
-            if self.jump(new_node, y_dir) or self.jump(new_node, z_dir):
-                return new_node
-            
-        # if exists forced neighbor
-        if self.detectForceNeighbor(new_node, motion):
-            return new_node
-        else:
-            return self.jump(new_node, motion)
+            # Goal found
+            if current == self.goal:
+                return current
+
+            # Forced neighbor detection
+            if self.detectForceNeighbor(current, motion):
+                return current
+
+            # Stop stepping if motion is 1D along any axis
+            if abs(motion.x) + abs(motion.y) + abs(motion.z) == 1:
+                return current
+
 
     def detectForceNeighbor(self, node, motion):
         """

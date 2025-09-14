@@ -63,54 +63,16 @@ class GraphSearcher(Planner):
 
         return base_cost * altitude_factor
 
-    def isCollision(self, node1: Node, node2: Node) -> bool:
-        """
-
-        Judge collision when moving from node1 to node2 in 3D.
-
-        Parameters:
-            node1 (Node): node 1
-            node2 (Node): node 2
-
-        Returns:
-            collision (bool): True if collision exists else False
-        """
-
-        # Direct collisions
-        if node1.current in self.obstacles or node2.current in self.obstacles:
-            return True
-
-        x1, y1, z1 = node1.x, node1.y, node1.z
-        x2, y2, z2 = node2.x, node2.y, node2.z
-
+    def isCollision(self, node1, node2):
+        x1, y1, z1 = node1.current
+        x2, y2, z2 = node2.current
         dx, dy, dz = x2 - x1, y2 - y1, z2 - z1
-
-        # If moving diagonally (any two or three axes at once), check all "shared faces/edges"
-        intermediate_points = []
-
-        # Check x-y plane between nodes
-        if dx != 0 and dy != 0:
-            intermediate_points.append((min(x1, x2), min(y1, y2), z1))
-            intermediate_points.append((max(x1, x2), max(y1, y2), z1))
-
-        # Check x-z plane between nodes
-        if dx != 0 and dz != 0:
-            intermediate_points.append((min(x1, x2), y1, min(z1, z2)))
-            intermediate_points.append((max(x1, x2), y1, max(z1, z2)))
-
-        # Check y-z plane between nodes
-        if dy != 0 and dz != 0:
-            intermediate_points.append((x1, min(y1, y2), min(z1, z2)))
-            intermediate_points.append((x1, max(y1, y2), max(z1, z2)))
-
-        # If moving along all three axes (true 3D diagonal), add the central cube corners
-        if dx != 0 and dy != 0 and dz != 0:
-            intermediate_points.append((min(x1, x2), min(y1, y2), min(z1, z2)))
-            intermediate_points.append((max(x1, x2), max(y1, y2), max(z1, z2)))
-
-        # Check for collisions on these intermediate points
-        for pt in intermediate_points:
-            if pt in self.obstacles:
+        steps = max(abs(dx), abs(dy), abs(dz))
+        for i in range(1, steps + 1):
+            x = x1 + int(round(dx * i / steps))
+            y = y1 + int(round(dy * i / steps))
+            z = z1 + int(round(dz * i / steps))
+            if (x, y, z) in self.obstacles:
                 return True
-
         return False
+
