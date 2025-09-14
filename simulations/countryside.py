@@ -47,12 +47,17 @@ if __name__ == '__main__':
     plt = algopicker()(start, goal, env=grid_env)
 
     # Time only the pathfinding computation
-    start_time = time.time()
-    cost, path, expand = plt.plan()
-    end_time = time.time()
+    run_n_times = 1
+    ex_times = []
+    for i in range(run_n_times):
+        start_time = time.time()
+        cost, path, expand = plt.plan()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        e = f"{execution_time:.3f} s"
+        ex_times.append(e)
     
-    # Calculate computation time
-    execution_time = end_time - start_time
+    print(ex_times)
     
     # Create algorithm name with computation time
     algorithm_name = f"{str(plt)}. computation time: {execution_time:.4f}s"

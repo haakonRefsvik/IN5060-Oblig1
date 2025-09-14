@@ -1,46 +1,19 @@
-"""
-@file: jps.py
-@breif: Jump Point Search motion planning
-@author: Yang Haodong, Wu Maojia
-@update: 2024.6.23
-"""
 import heapq
-
 from .a_star import AStar
-from python_motion_planning.utils import Env, Node, Grid
+from python_motion_planning.utils import Node, Grid
 
 class JPS(AStar):
     """
-    Class for JPS motion planning.
-
-    Parameters:
-        start (tuple): start point coordinate
-        goal (tuple): goal point coordinate
-        env (Grid): environment
-        heuristic_type (str): heuristic function type
-
-    Examples:
-        >>> import python_motion_planning as pmp
-        >>> planner = pmp.JPS((5, 5), (45, 25), pmp.Grid(51, 31))
-        >>> cost, path, expand = planner.plan()     # planning results only
-        >>> planner.plot.animation(path, str(planner), cost, expand)  # animation
-        >>> planner.run()       # run both planning and animation
-
-    References:
-        [1] Online Graph Pruning for Pathfinding On Grid Maps
+    Iterative, efficient 3D Jump Point Search planner.
     """
-    def __init__(self, start: tuple, goal: tuple, env: Grid, heuristic_type: str = "euclidean") -> None:
+
+    def __init__(self, start: tuple, goal: tuple, env: Grid, heuristic_type: str = "euclidean"):
         super().__init__(start, goal, env, heuristic_type)
-    
-    def __str__(self) -> str:
+
+    def __str__(self):
         return "Jump Point Search(JPS)"
 
-    def plan(self) -> tuple:
-        """
-        Optimized JPS plan function.
-        Returns:
-            cost (float), path (list), expand (list)
-        """
+    def plan(self):
         OPEN = []
         self.start.g = 0
         self.start.h = self.h(self.start, self.goal)
@@ -53,18 +26,17 @@ class JPS(AStar):
 
             if node.current in CLOSED:
                 continue
-
             CLOSED[node.current] = node
 
             if node == self.goal:
                 cost, path = self.extractPath(CLOSED)
                 return cost, path, list(CLOSED.values())
 
-            for motion in self.motions:
-                jp = self.jump(node, motion)
-                if jp and jp.current not in CLOSED:
-                    step_cost = self.cost(node, jp)
-                    jp.g = node.g + step_cost
+            # Explore jump points from current node
+            for motion in self.prune_motions(node):
+                jp, g_inc = self.jump(node, motion)
+                if jp and (jp.current not in CLOSED or jp.g > node.g + g_inc):
+                    jp.g = node.g + g_inc
                     jp.h = self.h(jp, self.goal)
                     jp.f = jp.g + jp.h
                     jp.parent = node.current
@@ -74,33 +46,70 @@ class JPS(AStar):
 
     def jump(self, node: Node, motion: Node):
         """
-        Iterative jump in 3D. Stops at forced neighbor, obstacle, or goal.
+        Iterative jump along the motion direction.
+        Returns a jump point node and the incremental cost from `node`.
+        Properly accumulates altitude-adjusted cost.
         """
-        current = Node(node.current, node.parent, node.g, node.h)
+        dx, dy, dz = motion.current
+        x, y, z = node.current
+        g_inc = 0
 
         while True:
-            # Step in motion direction
-            current = current + motion
+            nx, ny, nz = x + dx, y + dy, z + dz
 
-            # Stop if outside grid or obstacle
-            x, y, z = current.current
-            if not (0 <= x < self.env.x_range and 0 <= y < self.env.y_range and 0 <= z < self.env.z_range):
-                return None
-            if current.current in self.obstacles:
-                return None
+            # Out of bounds
+            if not (0 <= nx < self.env.x_range and 0 <= ny < self.env.y_range and 0 <= nz < self.env.z_range):
+                return None, None
+            # Obstacle collision
+            if (nx, ny, nz) in self.obstacles:
+                return None, None
+
+            # Compute step cost from previous to new node
+            prev_node = Node((x, y, z), None, 0, 0)
+            next_node = Node((nx, ny, nz), None, 0, 0)
+            step_cost = self.cost(prev_node, next_node)
+            if step_cost == float("inf"):
+                return None, None
+
+            g_inc += step_cost
+
+            # Move to next step
+            x, y, z = nx, ny, nz
+            current = Node((x, y, z), node.current, 0, 0)
 
             # Goal found
             if current == self.goal:
-                return current
+                return current, g_inc
 
-            # Forced neighbor detection
+            # Forced neighbor triggers jump point
             if self.detectForceNeighbor(current, motion):
-                return current
+                return current, g_inc
 
-            # Stop stepping if motion is 1D along any axis
-            if abs(motion.x) + abs(motion.y) + abs(motion.z) == 1:
-                return current
+            # If moving along a single axis, stop here (1D motion)
+            if abs(dx) + abs(dy) + abs(dz) == 1:
+                return current, g_inc
 
+            # For diagonals: check orthogonal directions iteratively
+            # Only stop if detectForceNeighbor triggers (already handled)
+
+
+    def prune_motions(self, node: Node):
+        if not node.parent:
+            return self.motions  # At start, all motions allowed
+
+        px, py, pz = node.parent
+        cx, cy, cz = node.current
+        dx, dy, dz = cx - px, cy - py, cz - pz
+
+        pruned = []
+        for motion in self.motions:
+            mx, my, mz = motion.current  # <-- unpack from Node.current
+            # Keep motions that are along dx/dy/dz or diagonals
+            if (dx == 0 or mx == dx or mx == 0) and \
+            (dy == 0 or my == dy or my == 0) and \
+            (dz == 0 or mz == dz or mz == 0):
+                pruned.append(motion)
+        return pruned
 
     def detectForceNeighbor(self, node, motion):
         """
