@@ -13,26 +13,10 @@ def add_building(grid: Grid, x_offset, y_offset, length, width, height):
     # Add obstacles
     obstacles = grid.obstacles  # Get current obstacles (boundary walls)
 
-    for x in range(0, length + 1, 1):
-        for z in range(0, height, 1):
-            obstacles.add((x + x_offset, y_offset, z))
-    
-    for x in range(0, length + 1, 1):
-        for z in range(0, height, 1):
-            obstacles.add((x + x_offset, y_offset + width, z))
-
-    for y in range(0, width, 1):
-        for z in range(0, height, 1):
-            obstacles.add((x_offset, y + y_offset, z))
-
-    for y in range(0, width, 1):
-        for z in range(0, height, 1):
-            obstacles.add((x_offset + length, y + y_offset, z))
-
-    ## roof
     for y in range(0, width + 1, 1):
         for x in range(0, length + 1, 1):
-            obstacles.add((x + x_offset, y + y_offset, height))
+            for z in range(0, height, 1):
+                obstacles.add((x + x_offset, y + y_offset, z))
 
     # Update the environment after adding obstacles:
     grid.update(obstacles)

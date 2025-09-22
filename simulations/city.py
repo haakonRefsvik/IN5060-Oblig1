@@ -13,10 +13,10 @@ from python_motion_planning import *
 from utils import add_building, add_tree
 
 
-def create_city_environment():
+def create_city_environment(x, y, z = 25):
     """Create a dense city environment like Manhattan with tightly packed buildings"""
     # Create environment with boundary walls
-    grid_env = Grid(50, 60, 25)
+    grid_env = Grid(x, y, z)
     
     # Create a dense Manhattan-like grid of buildings with wider streets for visibility
     # Row 1 - Southern edge buildings (wider spacing between buildings)
@@ -113,7 +113,7 @@ def create_city_environment():
 
 if __name__ == '__main__':
     # Create city environment
-    grid_env = create_city_environment()
+    grid_env = create_city_environment(50, 60, 25)
     
     # Set start and goal points for urban navigation
     start = (1, 1, 1)
